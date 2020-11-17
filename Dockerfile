@@ -44,8 +44,13 @@ RUN cd /builds/build/master && \
     ninja -j 8
 
 # runSofa cannot be used by the root user so this must be added.
-RUN useradd -u 8877 sofauser
+RUN apt-get -y install sudo
+
+RUN useradd -m sofauser && echo "sofauser:sofauser" | chpasswd && adduser sofauser sudo
+
+USER sofauser
+CMD /bin/bash
+
 
 # there is an issue here where the sofauser can't source /root/.bashrc but 
 # I am going to see about fixing this
-USER sofauser
