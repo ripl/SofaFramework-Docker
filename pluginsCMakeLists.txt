@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8.12)
+
+find_package(SofaFramework)
+
+sofa_add_plugin(STLIB/  STLIB)
+sofa_add_plugin(SoftRobots/  SoftRobots)
+sofa_add_plugin(ModelOrderReduction/ ModelOrderReduction)
