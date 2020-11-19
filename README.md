@@ -1,4 +1,4 @@
-This repo has contains scripts that will automate building the Sofa Framwork simulator with plugins needed to work with Soft Robots.
+This repo has contains scripts that will automate building the Sofa Framwork simulator with plugins needed to work with Soft Robots. (STLIB, SoftRobots, ModelOrderReduction).
 
 To build run: ./build.sh
 
