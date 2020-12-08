@@ -43,14 +43,43 @@ RUN cd /builds/build/master && \
     cmake -c CMakeCache.txt && \
     ninja -j 8
 
+
+# make the build directory accessible to anyone
+RUN chmod -R a+wr /builds
+
 # runSofa cannot be used by the root user so this must be added.
 RUN apt-get -y install sudo
+RUN useradd --create-home --shell /bin/bash sofauser && echo "sofauser:sofauser" | chpasswd && adduser sofauser sudo
+WORKDIR /home/sofauser
 
-RUN useradd -m sofauser && echo "sofauser:sofauser" | chpasswd && adduser sofauser sudo
+# Python Dependencies for Model Order Reduction
+RUN apt-get -y install python-qt4 python-yaml python-cheetah
+
+
+# Python Dependencies for jupyter-notebook
+RUN apt-get install -y build-essential python3.6 python3-pip python3-dev
+RUN pip3 -q install pip --upgrade
+RUN pip3 install jupyter
+
+
+# Set shell
+SHELL ["/bin/bash", "-c"]
 
 USER sofauser
-CMD /bin/bash
+ENV HOME="/home/sofauser"
+
+RUN echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /home/sofauser/.bashrc
+RUN echo 'export PYTHONPATH=/builds/src/tools/sofa-launcher:$PYTHONPATH' >> /home/sofauser/.bashrc 
+RUN echo 'export PATH=/builds/build/master/bin:$PATH' >> /home/sofauser/.bashrc
+RUN echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /home/sofauser/.bashrc
 
 
-# there is an issue here where the sofauser can't source /root/.bashrc but 
-# I am going to see about fixing this
+
+# Python2 kernel for jupyter notebook
+RUN python -m pip install ipykernel plotly
+RUN python -m ipykernel install --user
+
+
+ 
+CMD /bin/bash -c "source ~/.bashrc && /bin/bash"
+
