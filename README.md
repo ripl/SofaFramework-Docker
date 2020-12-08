@@ -16,9 +16,9 @@ To launch use ./launch_docker.sh, this will mount /workdir to the home directory
 
 To see the problem with Model Order reduction run:
 
-"cd /home/sofauser/workdir/MOR_test"
+"$ cd /home/sofauser/workdir/MOR_test"
 
-"jupyter-notebook DiskModelOrderReduction.ipynb"
+"$ jupyter-notebook DiskModelOrderReduction.ipynb"
 
 and open the link   http://localhost:8888/?token=SomethingSomethingSomething to view in your local browser
 
