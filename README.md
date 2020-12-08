@@ -1,4 +1,5 @@
 Requirements:
+docker: https://docs.docker.com/engine/install/ubuntu/
 x-docker deals with x11 forwarding and docker and can be found at:
 Instructions for x-docker can be found at: https://github.com/afdaniele/x-docker
 
