@@ -53,7 +53,7 @@ RUN useradd --create-home --shell /bin/bash sofauser && echo "sofauser:sofauser"
 WORKDIR /home/sofauser
 
 # Python Dependencies for Model Order Reduction
-RUN apt-get -y install python-qt4 python-yaml python-cheetah
+RUN apt-get -y install python-qt4 python-yaml python-cheetah python-nbformat
 
 
 # Python Dependencies for jupyter-notebook
@@ -69,17 +69,16 @@ USER sofauser
 ENV HOME="/home/sofauser"
 
 RUN echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /home/sofauser/.bashrc
-RUN echo 'export PYTHONPATH=/builds/src/tools/sofa-launcher:$PYTHONPATH' >> /home/sofauser/.bashrc 
+RUN echo 'export PYTHONPATH=/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:$PYTHONPATH' >> /home/sofauser/.bashrc 
 RUN echo 'export PATH=/builds/build/master/bin:$PATH' >> /home/sofauser/.bashrc
 RUN echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /home/sofauser/.bashrc
 
 
 
 # Python2 kernel for jupyter notebook
-RUN python -m pip install ipykernel plotly
+RUN python -m pip install ipykernel plotly iplot
 RUN python -m ipykernel install --user
 
 
- 
-CMD /bin/bash -c "source ~/.bashrc && /bin/bash"
+CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/MOR_test && /bin/bash"
 

@@ -2,14 +2,13 @@ This repo has contains scripts that will automate building the Sofa Framwork sim
 
 To build run: ./build.sh
 
-To use sofa run: x-docker run -it --net=host --privileged ripl/sofasoftrobots:latest 
 
-To git the container access to a directory you are working on use the -v flag when running docker: eg:
+To launch use ./launch_docker.sh, this will mount /workdir to the home directory of the user in the docker container.
 
-x-docker run -it --net=host --privileged -v /home/username/Documents/SofaScenes:/workdir ripl/sofasoftrobots:latest
+To see the problem with Model Order reduction run:
+"cd /home/sofauser/workdir/MOR_test"
+"jupyter notebook"
+and run DiskModelOrderReduction.ipynb. 
 
-Instead of doing a chmod on all your files you can use the -u flag with $UID to set the user id inside the docker container to match the one outside. 
-
-$x-docker run -u $UID -it --net=host --privileged -v /home/username/Documents/SofaScenes:/workdir ripl/sofasoftrobots:latest
-
+x-docker deals with x11 forwarding and docker and can be found at:
 Instructions for x-docker can be found at: https://github.com/afdaniele/x-docker
