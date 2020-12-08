@@ -7,8 +7,9 @@ To launch use ./launch_docker.sh, this will mount /workdir to the home directory
 
 To see the problem with Model Order reduction run:
 "cd /home/sofauser/workdir/MOR_test"
-"jupyter notebook"
-and run DiskModelOrderReduction.ipynb. 
+"jupyter-notebook DiskModelOrderReduction.ipynb"
+
+and open the link   http://localhost:8888/?token=SomethingSomethingSomething to view in your local browser
 
 x-docker deals with x11 forwarding and docker and can be found at:
 Instructions for x-docker can be found at: https://github.com/afdaniele/x-docker
