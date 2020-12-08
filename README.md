@@ -22,3 +22,5 @@ To see the problem with Model Order reduction run:
 
 and open the link   http://localhost:8888/?token=SomethingSomethingSomething to view in your local browser
 
+Inside the ipynb you should be able to run each of the cells until you get to phase3() where the error should appear.
+
