@@ -68,6 +68,7 @@ SHELL ["/bin/bash", "-c"]
 USER sofauser
 ENV HOME="/home/sofauser"
 
+# set up environment with bashrc
 RUN echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /home/sofauser/.bashrc
 RUN echo 'export PYTHONPATH=/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:$PYTHONPATH' >> /home/sofauser/.bashrc 
 RUN echo 'export PATH=/builds/build/master/bin:$PATH' >> /home/sofauser/.bashrc
