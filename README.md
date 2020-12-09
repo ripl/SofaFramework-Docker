@@ -27,5 +27,5 @@ Inside the ipynb you should be able to run each of the cells until you get to ph
 
 
 
-Note: currently the runSofa gui that uses OpenGL doesn't work when the host machine has an nvidia GPU due to driver issues.
+Note: currently the runSofa gui that uses OpenGL doesn't work when the host machine has an nvidia GPU due (I believe) to driver issues.
 
