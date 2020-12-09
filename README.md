@@ -24,3 +24,8 @@ and open the link   http://localhost:8888/?token=SomethingSomethingSomething to 
 
 Inside the ipynb you should be able to run each of the cells until you get to phase3() where the error should appear.
 
+
+
+
+Note: currently the runSofa gui that uses OpenGL doesn't work when the host machine has an nvidia GPU due to driver issues.
+
