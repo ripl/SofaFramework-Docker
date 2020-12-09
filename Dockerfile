@@ -1,4 +1,6 @@
 FROM sofaframework/sofabuilder_ubuntu:latest
+# original docker file: https://hub.docker.com/r/sofaframework/sofabuilder_ubuntu/dockerfile
+
 #############################################################################################
 # Sofa-Framework Build Support End
 #############################################################################################
