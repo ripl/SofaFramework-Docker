@@ -33,25 +33,14 @@ RUN apt-get install tree clang-8 -y
 # Sudo for sofauser
 RUN apt-get -y install sudo
 
-# Python2 Dependencies for Model Order Reduction
+# Python Dependencies for Model Order Reduction
 RUN apt-get -y install python-qt4 python-yaml python-cheetah python-nbformat
-
-
-#Upgrade python3 from 3.6 to 3.7 for build
-RUN apt -y install python3.7 python3.7-dev
-RUN rm /usr/bin/python3 && ln -s python3.7 /usr/bin/python3
-
-RUN   git config --global user.email "arthur@arthur.com"
-RUN   git config --global user.name "Arthur"
-
 
 # Python3 and Python2 Dependencies for jupyter-notebook
 RUN apt-get install -y build-essential python3.6 python3-pip python3-dev
 RUN pip3 -q install pip --upgrade
 RUN pip3 install jupyter
 RUN python -m pip install ipykernel plotly iplot
-
-RUN pip3 install pybind11 && pip3 install "pybind11[global]"
 
 # Make a build directory to work in
 RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/plugins
@@ -73,31 +62,12 @@ RUN cd /builds/plugins && \
 #    git checkout 93a7d0ed6658b0819cefbd4c91b90f5dae64be78
 
 # MOR NOT supported by python3
-RUN cd /builds/plugins && \ 
-    git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
-    cd ModelOrderReduction && \
-    git checkout 83931e5697770e441e15dc3666c32f71fc038983
+#RUN cd /builds/plugins && \ 
+#    git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
+#    cd ModelOrderReduction && \
+#    git checkout 83931e5697770e441e15dc3666c32f71fc038983
 
 COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
-
-
-RUN rm /usr/bin/python && ln -s python3.7 /usr/bin/python
-
-RUN apt install -y ffmpeg 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # This Cache was made by using cmake-gui and x-docker and copying the resulting cache
@@ -105,7 +75,7 @@ RUN apt install -y ffmpeg
 # adds needed compile parameters or if you want to change the build you will need to
 # stop the build at this point, run $x-docker run -it and then use cmake-gui to re-configure
 # and create a new CMakeCache file.
-COPY ./CMakeCachePython3.txt /builds/build/master/CMakeCache.txt
+COPY ./CMakeCache.txt /builds/build/master/CMakeCache.txt
 
 # build sofa
 RUN cd /builds/build/master && \
@@ -155,5 +125,4 @@ RUN python -m ipykernel install --user
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/MOR_test && /bin/bash"
-
 
