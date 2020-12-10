@@ -28,21 +28,20 @@ RUN chmod a+x /docker-entrypoint.sh
 #my code starts here
 RUN apt-get update && apt-get upgrade -y
 
-RUN apt-get install tree clang-8 -y
-
-# Sudo for sofauser
-RUN apt-get -y install sudo
+RUN apt-get install -y tree clang-8 ffmpeg sudo
+# Sudo for sofauserdd
 
 # Python2 Dependencies for Model Order Reduction
 RUN apt-get -y install python-qt4 python-yaml python-cheetah python-nbformat
 
 
-#Upgrade python3 from 3.6 to 3.7 for build
+#Upgrade python3 from 3.6 to 3.7 for building SofaPython3
 RUN apt -y install python3.7 python3.7-dev
 RUN rm /usr/bin/python3 && ln -s python3.7 /usr/bin/python3
 
-RUN   git config --global user.email "arthur@arthur.com"
-RUN   git config --global user.name "Arthur"
+# Not having these parametes set when building sofapython3 raises an error
+RUN   git config --global user.email "place holder@example.com"
+RUN   git config --global user.name "place holder"
 
 
 # Python3 and Python2 Dependencies for jupyter-notebook
@@ -73,14 +72,14 @@ RUN cd /builds/plugins && \
 #    git checkout 93a7d0ed6658b0819cefbd4c91b90f5dae64be78
 
 # MOR NOT supported by python3
-RUN cd /builds/plugins && \ 
-    git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
-    cd ModelOrderReduction && \
-    git checkout 83931e5697770e441e15dc3666c32f71fc038983
+#RUN cd /builds/plugins && \ 
+#    git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
+#    cd ModelOrderReduction && \
+#    git checkout 83931e5697770e441e15dc3666c32f71fc038983
 
 COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
 
-
+#set this so it matches for the CMakeCache
 RUN rm /usr/bin/python && ln -s python3.7 /usr/bin/python
 
 RUN apt install -y ffmpeg 
