@@ -82,22 +82,6 @@ COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
 #set this so it matches for the CMakeCache
 RUN rm /usr/bin/python && ln -s python3.7 /usr/bin/python
 
-RUN apt install -y ffmpeg 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # This Cache was made by using cmake-gui and x-docker and copying the resulting cache
 # to outside the docker container, if changing the versions of any of the above git repos
@@ -130,7 +114,6 @@ RUN useradd --create-home --shell /bin/bash sofauser && echo "sofauser:sofauser"
 WORKDIR /home/sofauser
 
 
-
 # Set shell
 SHELL ["/bin/bash", "-c"]
 
@@ -146,8 +129,6 @@ RUN echo 'export PYTHONPATH=/builds/plugins/ModelOrderReduction/python:/builds/s
 RUN echo 'export PATH=/builds/build/master/bin:$PATH' >> /home/sofauser/.bashrc
 RUN echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /home/sofauser/.bashrc
 RUN echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /home/sofauser/.bashrc
-
-
 
 # Python2 kernel for jupyter notebook
 RUN python -m ipykernel install --user

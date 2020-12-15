@@ -2,9 +2,9 @@ import Sofa
 import sys
 import os
 #from stlib3.physics.constraints import FixedBox
-from stlib3.scene import Scene
-from splib3.animation import animate
-from stlib3.physics.deformable.elasticmaterialobject import ElasticMaterialObject
+from stlib.scene import Scene
+from splib.animation import animate
+from stlib.physics.deformable.elasticmaterialobject import ElasticMaterialObject
 #from softrobots.actuators import PneumaticCavity
 import time
 import math
