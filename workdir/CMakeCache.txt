@@ -39,106 +39,106 @@ APPLICATION_SOFAOPENCL:BOOL=OFF
 APPLICATION_SOFAPHYSICSAPI:BOOL=OFF
 
 //Value Computed by CMake
-Bindings.Modules.SofaBaseTopology_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Modules/src/SofaPython3/SofaBaseTopology
+Bindings.Modules.SofaBaseTopology_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Modules/src/SofaPython3/SofaBaseTopology
 
 //Value Computed by CMake
-Bindings.Modules.SofaBaseTopology_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Modules/src/SofaPython3/SofaBaseTopology
+Bindings.Modules.SofaBaseTopology_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Modules/src/SofaPython3/SofaBaseTopology
 
 //Value Computed by CMake
-Bindings.Modules_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Modules
+Bindings.Modules_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Modules
 
 //Value Computed by CMake
-Bindings.Modules_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Modules
+Bindings.Modules_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Modules
 
 //Value Computed by CMake
-Bindings.Sofa.Components_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Components
+Bindings.Sofa.Components_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Components
 
 //Value Computed by CMake
-Bindings.Sofa.Components_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Components
+Bindings.Sofa.Components_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Components
 
 //Value Computed by CMake
-Bindings.Sofa.Core_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Core
+Bindings.Sofa.Core_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Core
 
 //Value Computed by CMake
-Bindings.Sofa.Core_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Core
+Bindings.Sofa.Core_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Core
 
 //Value Computed by CMake
-Bindings.Sofa.Helper_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Helper
+Bindings.Sofa.Helper_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Helper
 
 //Value Computed by CMake
-Bindings.Sofa.Helper_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Helper
+Bindings.Sofa.Helper_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Helper
 
 //Value Computed by CMake
-Bindings.Sofa.Simulation_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Simulation
+Bindings.Sofa.Simulation_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Simulation
 
 //Value Computed by CMake
-Bindings.Sofa.Simulation_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Simulation
+Bindings.Sofa.Simulation_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Simulation
 
 //Value Computed by CMake
-Bindings.Sofa.Tests_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa/tests
+Bindings.Sofa.Tests_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa/tests
 
 //Value Computed by CMake
-Bindings.Sofa.Tests_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa/tests
+Bindings.Sofa.Tests_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa/tests
 
 //Value Computed by CMake
-Bindings.Sofa.Types_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Types
+Bindings.Sofa.Types_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Types
 
 //Value Computed by CMake
-Bindings.Sofa.Types_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Types
+Bindings.Sofa.Types_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa/src/SofaPython3/Sofa/Types
 
 //Value Computed by CMake
-Bindings.SofaExporter.Tests_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaExporter/tests
+Bindings.SofaExporter.Tests_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaExporter/tests
 
 //Value Computed by CMake
-Bindings.SofaExporter.Tests_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaExporter/tests
+Bindings.SofaExporter.Tests_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaExporter/tests
 
 //Value Computed by CMake
-Bindings.SofaExporter_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaExporter
+Bindings.SofaExporter_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaExporter
 
 //Value Computed by CMake
-Bindings.SofaExporter_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaExporter
+Bindings.SofaExporter_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaExporter
 
 //Value Computed by CMake
-Bindings.SofaGui_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaGui
+Bindings.SofaGui_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaGui
 
 //Value Computed by CMake
-Bindings.SofaGui_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaGui
+Bindings.SofaGui_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaGui
 
 //Value Computed by CMake
-Bindings.SofaRuntime.Tests_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaRuntime/tests
+Bindings.SofaRuntime.Tests_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaRuntime/tests
 
 //Value Computed by CMake
-Bindings.SofaRuntime.Tests_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaRuntime/tests
+Bindings.SofaRuntime.Tests_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaRuntime/tests
 
 //Value Computed by CMake
-Bindings.SofaRuntime_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaRuntime
+Bindings.SofaRuntime_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaRuntime
 
 //Value Computed by CMake
-Bindings.SofaRuntime_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaRuntime
+Bindings.SofaRuntime_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaRuntime
 
 //Value Computed by CMake
-Bindings.SofaTypes.Tests_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaTypes/tests
+Bindings.SofaTypes.Tests_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaTypes/tests
 
 //Value Computed by CMake
-Bindings.SofaTypes.Tests_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaTypes/tests
+Bindings.SofaTypes.Tests_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaTypes/tests
 
 //Value Computed by CMake
-Bindings.SofaTypes_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/SofaTypes
+Bindings.SofaTypes_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/SofaTypes
 
 //Value Computed by CMake
-Bindings.SofaTypes_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/SofaTypes
+Bindings.SofaTypes_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/SofaTypes
 
 //Value Computed by CMake
-Bindings.Sofa_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings/Sofa
+Bindings.Sofa_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings/Sofa
 
 //Value Computed by CMake
-Bindings.Sofa_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings/Sofa
+Bindings.Sofa_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings/Sofa
 
 //Value Computed by CMake
-Bindings_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/bindings
+Bindings_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/bindings
 
 //Value Computed by CMake
-Bindings_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/bindings
+Bindings_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/bindings
 
 //Boost atomic library (debug)
 Boost_ATOMIC_LIBRARY_DEBUG:FILEPATH=/usr/lib/libboost_atomic.so
@@ -482,10 +482,10 @@ CSparse_DIR:PATH=/builds/build/master/cmake
 DPython_EXECUTABLE:FILEPATH=/usr/bin/python
 
 //Value Computed by CMake
-Documentation_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/docs
+Documentation_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/docs
 
 //Value Computed by CMake
-Documentation_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/docs
+Documentation_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/docs
 
 //Path to a file.
 EIGEN3_INCLUDE_DIR:PATH=/usr/include/eigen3
@@ -494,10 +494,10 @@ EIGEN3_INCLUDE_DIR:PATH=/usr/include/eigen3
 Eigen3_DIR:PATH=Eigen3_DIR-NOTFOUND
 
 //Value Computed by CMake
-Examples_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/examples
+Examples_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/examples
 
 //Value Computed by CMake
-Examples_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/examples
+Examples_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/examples
 
 //Path to a program.
 FFMPEG_EXEC:FILEPATH=/usr/bin/ffmpeg
@@ -854,10 +854,10 @@ PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python
 PYTHON_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libpython3.7m.so
 
 //Value Computed by CMake
-Plugin_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3/Plugin
+Plugin_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3/Plugin
 
 //Value Computed by CMake
-Plugin_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3/Plugin
+Plugin_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3/Plugin
 
 //Value Computed by CMake
 QGLViewer_BINARY_DIR:STATIC=/builds/build/master/SofaGui/SofaGuiQt/libQGLViewer-2.7.1/QGLViewer
@@ -1812,13 +1812,13 @@ SofaPreconditioner_BINARY_DIR:STATIC=/builds/build/master/modules/SofaPreconditi
 SofaPreconditioner_SOURCE_DIR:STATIC=/builds/src/modules/SofaPreconditioner
 
 //Value Computed by CMake
-SofaPython3_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaPython3
+SofaPython3_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/SofaPython3
 
 //The directory containing a CMake configuration file for SofaPython3.
-SofaPython3_DIR:PATH=/builds/build/master/cmake/SofaPython3
+SofaPython3_DIR:PATH=SofaPython3_DIR-NOTFOUND
 
 //Value Computed by CMake
-SofaPython3_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaPython3
+SofaPython3_SOURCE_DIR:STATIC=/builds/plugins/SofaPython3
 
 //The directory containing a CMake configuration file for SofaPython.
 SofaPython_DIR:PATH=SofaPython_DIR-NOTFOUND
@@ -2308,7 +2308,7 @@ FIND_PACKAGE_MESSAGE_DETAILS_OpenGL:INTERNAL=[/usr/lib/x86_64-linux-gnu/libOpenG
 //Details about finding PYTHON
 FIND_PACKAGE_MESSAGE_DETAILS_PYTHON:INTERNAL=/usr/bin/python3.7.5
 //Details about finding PythonInterp
-FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python][v3.7.5(3.7)]
+FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python][v3.7.5()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Details about finding ZLIB
