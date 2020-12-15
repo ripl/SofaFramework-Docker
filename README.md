@@ -23,7 +23,7 @@ Inside the ipynb you should be able to run each of the cells until you get to ph
 
 
 
-To use the runSofa gui:
+To use the runSofa gui or if you have trouble with x11 forwarding:
 Use x-docker_launch.sh
 x-docker deals with x11 forwarding and docker and can be found at:
 Instructions for x-docker can be found at: https://github.com/afdaniele/x-docker
