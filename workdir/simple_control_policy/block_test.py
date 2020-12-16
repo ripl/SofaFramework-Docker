@@ -33,7 +33,7 @@ def createSceneReal(rootNode, dt):
     # marks a required plugin and some visual style stuff
 
 
-    Scene(rootNode, gravity=[0,0,0]) 
+    Scene(rootNode, gravity=[0,0,0], dt=dt) 
 
     required_plugins = [ 'SofaTopologyMapping', 'SofaOpenglVisual', 'SofaSparseSolver', 'SofaConstraint', 'SofaGeneralLoader', 'SoftRobots']
     for i in required_plugins:
@@ -123,7 +123,7 @@ def createSceneReal(rootNode, dt):
                         translation="0 0 0")
     cavity1.addObject('Mesh', src='@loader', name='topo')
     cavity1.addObject('MechanicalObject', name='cavity')
-    cavity1.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="6.6001",
+    cavity1.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.6001",
                         triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="pressure")
     cavity1.addObject('BarycentricMapping', name='mapping', mapForces='false', mapMasses='false')
 
@@ -132,7 +132,7 @@ def createSceneReal(rootNode, dt):
                         translation="0 0 0")
     cavity2.addObject('Mesh', src='@loader', name='topo')
     cavity2.addObject('MechanicalObject', name='cavity')
-    cavity2.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="6.0001",
+    cavity2.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.60001",
                         triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="pressure")
     cavity2.addObject('BarycentricMapping', name='mapping', mapForces='false', mapMasses='false')
 
@@ -168,7 +168,7 @@ def createScene(rootNode):
     checklist = []
     #animation function called at each step
     def my_animation(target, factor):
-        factor = factor*2*np.pi
+        #factor = factor*2*np.pi
         pressureValue1 = target["two_cell_robot.cavity1.SurfacePressureConstraint.value"].getValueString()
         print(pressureValue1)
         pressureValue1 = float(pressureValue1)
@@ -180,7 +180,9 @@ def createScene(rootNode):
         #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(10.0)
         validation_value = target["two_cell_robot.dofs"].position
         checklist.append(np.array(validation_value[312])) #want 312
-
+        if factor > 0.99:
+             #np.save("/home/sofauser/workdir/v1.npy", np.array(checklist))
+             np.save("/home/sofauser/workdir/simple_control_policy/runsofa.npy", np.array(checklist))
         print(factor)
 
     # the exit func is called when duration of time has elapsed, it marks the simulation time
@@ -188,8 +190,11 @@ def createScene(rootNode):
     def ExitFunc(target, factor):
         # save the various data.
         runtime = timeit.default_timer() - start
-        print("runtime", runtime)
-        np.save("v1.npy", np.array(checklist))
+        print("runtime", runtime) 
+        f = open("demofile3.txt", "w")
+        f.write("tracer4a975fc53a215f54")
+        f.close()
+
         sys.exit(0)
 
     def getObject(self, name):
