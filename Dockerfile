@@ -141,7 +141,7 @@ RUN python -m ipykernel install --user
 # set up environment with bashrc
 RUN echo 'source /opt/qt512/bin/qt512-env.sh && exec "$@"' >> /home/sofauser/.bashrc
 RUN echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /home/sofauser/.bashrc
-RUN echo 'export PYTHONPATH=/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python3/src:/builds/plugins/SoftRobots/python3:$PYTHONPATH' >> /home/sofauser/.bashrc 
+RUN echo 'export PYTHONPATH=/builds/plugins/SofaPython3/splib:/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python3/src:/builds/plugins/SoftRobots/python3:$PYTHONPATH' >> /home/sofauser/.bashrc 
 RUN echo 'export PATH=/builds/build/master/bin:$PATH' >> /home/sofauser/.bashrc
 RUN echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /home/sofauser/.bashrc
 RUN echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /home/sofauser/.bashrc
@@ -149,6 +149,6 @@ RUN echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /home/sofauser/.bashrc
 
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/MOR_test && /bin/bash"
+CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/simple_control_policy/ && /bin/bash"
 
 
