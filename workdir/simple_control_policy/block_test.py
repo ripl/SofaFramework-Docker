@@ -16,25 +16,40 @@ import timeit
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 meshpath = path+"mesh/"
 
+def simulation_nodes(rootNode):
+    
+    rootNode.addObject('FreeMotionAnimationLoop') 
+    rootNode.addObject( 'EulerImplicitSolver', name='integration')
+
+    rootNode.addObject( 'SparseLDLSolver', name="solver")
+
 # scene helper function, defining materials and constraints
 def createSceneReal(rootNode, dt):
 
     
     # this sets gravity and dt in the simulator
 
-    rootNode = Scene(rootNode, gravity=[0.0, -0.0, 0], dt=dt)
+    #rootNode = Scene(rootNode, gravity=[0.0, -0.0, 0], dt=dt)
     # marks a required plugin and some visual style stuff
 
-    rootNode.addObject('RequiredPlugin', pluginName='SoftRobots')
+
+    Scene(rootNode, gravity=[0,0,0]) 
+
+    required_plugins = [ 'SofaTopologyMapping', 'SofaOpenglVisual', 'SofaSparseSolver', 'SofaConstraint', 'SofaGeneralLoader', 'SoftRobots']
+    for i in required_plugins:
+        rootNode.addObject("RequiredPlugin", name='req_p'+i, pluginName=i)
+
     rootNode.addObject('VisualStyle',
                           displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe')
-
+    
     # animation loop used for legrangian constraints
-    rootNode.addObject('FreeMotionAnimationLoop')
+    #rootNode.addObject('FreeMotionAnimationLoop')
     # linear solver (with parameters from example file)
     rootNode.addObject('GenericConstraintSolver', name='gencs', maxIterations='500', printLog='0', tolerance='0.0000001')
     # set color of background, just visual style
     rootNode.addObject('BackgroundSetting', color='0 0.168627 0.211765')
+    
+
     # YM of the material. All in kg / m / s
     volumeMeshFileName=meshpath+"two_cell_robot_solid.msh"
     name="two_cell_robot"
@@ -49,7 +64,8 @@ def createSceneReal(rootNode, dt):
     youngModulus=1800
     totalMass=1.0
     solver=None
-    # elestic material from prefab
+
+
     '''two_cell_robot = ElasticMaterialObject(name="two_cell_robot",
                                   attachedTo=rootNode,
                                   volumeMeshFileName=meshpath+"two_cell_robot_solid.msh",
@@ -65,56 +81,70 @@ def createSceneReal(rootNode, dt):
 
     '''
     
-    two_cell_robot = rootNode.createChild( 'two_cell_robot' )
+
+    two_cell_robot = rootNode.addChild( 'two_cell_robot' )
+
     two_cell_robot.addObject('MeshGmshLoader', name='loader', filename=volumeMeshFileName, rotation=rotation, translation=translation, scale3d=scale)
-    two_cell_robot.addObject( 'EulerImplicitSolver', name='integration')
-    two_cell_robot.addObject( 'SparseLDLSolver', name="solver")
+       
+
+
+    
+
+    # I am going to move EulerImplicitSolver, SparseLDLSolver, and FreeMotionAnimation to the root in the calling script.
+    simulation_nodes(rootNode)
+    #rootNode.addObject('FreeMotionAnimationLoop') 
+
+    #rootNode.addObject( 'EulerImplicitSolver', name='integration')
+    
+    #rootNode.addObject( 'SparseLDLSolver', name="solver")
+
+    
+
     two_cell_robot.addObject( 'TetrahedronSetTopologyContainer', src="@loader", name="container")
     two_cell_robot.addObject( 'MechanicalObject', template='Vec3d',  name='dofs') #topology="@container",
     two_cell_robot.addObject( 'UniformMass', totalMass=totalMass, name='mass')
     two_cell_robot.addObject( 'TetrahedronFEMForceField', template='Vec3d', method='large', name='forcefield', poissonRatio=poissonRatio, youngModulus=youngModulus)
 
-    two_cell_robot.addObject( 'LinearSolverConstraintCorrection', template='Vec3d', solverName='solver')
+
     
-    #two_cell_robot.addObject( 'FixedConstraint', template='Vec3d', topology="@container" )
 
+    two_cell_robot.addObject( 'LinearSolverConstraintCorrection', template='Vec3d', solverName='../solver')
 
-    #vm = two_cell_robot.createChild( 'VisualModel' )
-    #vm.addObject( 'MeshSTLLoader', template='')
-    #vm.addObject( 'OglModel', template='Vec3d', topology="@/two_cell_robot/container" )
-    #vm.addObject( 'BarycentricMapping', template='Vec3d,Vec3d', input="@../" , output="@./" )
-
+    
+    
+    #return rootNode
+    # elestic material from prefab
     # impose the constraints TODO: get these constraints so I can add gravity.
     #two_cell_robot.addObject("FixedConstraint", indices=fixed_const_str)
 
     # create the two actuators
-    cavity1 = two_cell_robot.createChild('cavity1')
+    cavity1 = two_cell_robot.addChild('cavity1')
     cavity1.addObject('MeshSTLLoader', name='loader', filename=meshpath + "two_cell_robot_cell1.stl",
                         translation="0 0 0")
     cavity1.addObject('Mesh', src='@loader', name='topo')
     cavity1.addObject('MechanicalObject', name='cavity')
-    cavity1.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.6001",
-                        triangles='@topo.triangles', visualization='0', showVisuScale='0.0002', valueType="pressure")
+    cavity1.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="6.6001",
+                        triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="pressure")
     cavity1.addObject('BarycentricMapping', name='mapping', mapForces='false', mapMasses='false')
 
-    cavity2 = two_cell_robot.createChild('cavity2')
+    cavity2 = two_cell_robot.addChild('cavity2')
     cavity2.addObject('MeshSTLLoader', name='loader', filename=meshpath + "two_cell_robot_cell2.stl",
                         translation="0 0 0")
     cavity2.addObject('Mesh', src='@loader', name='topo')
     cavity2.addObject('MechanicalObject', name='cavity')
-    cavity2.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.0001",
-                        triangles='@topo.triangles', visualization='0', showVisuScale='0.0002', valueType="pressure")
+    cavity2.addObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="6.0001",
+                        triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="pressure")
     cavity2.addObject('BarycentricMapping', name='mapping', mapForces='false', mapMasses='false')
 
     # two_cell_robot visualization
-    two_cell_robotVisu = two_cell_robot.createChild('visu')
+    two_cell_robotVisu = two_cell_robot.addChild('visu')
     two_cell_robotVisu.addObject('TriangleSetTopologyContainer', name='container')
     two_cell_robotVisu.addObject('TriangleSetTopologyModifier')
     #two_cell_robotVisu.addObject('TriangleSetTopologyAlgorithms', template='Vec3d')
     two_cell_robotVisu.addObject('TriangleSetGeometryAlgorithms', template='Vec3d')
     two_cell_robotVisu.addObject('Tetra2TriangleTopologicalMapping', name='Mapping', input="@../container",
                            output="@container")
-    two_cell_robotVisu.addObject('OglModel', template='ExtVec3f', color='0.3 0.2 0.2 0.6', translation=translation)
+    two_cell_robotVisu.addObject('OglModel', template='Vec3d', color='0.3 0.2 0.2 0.6', translation=translation)
     two_cell_robotVisu.addObject('IdentityMapping')
     
     return two_cell_robot
@@ -135,20 +165,21 @@ def createScene(rootNode):
 
     # simulation timer
     start = timeit.default_timer()
-
+    checklist = []
     #animation function called at each step
     def my_animation(target, factor):
         factor = factor*2*np.pi
         pressureValue1 = target["two_cell_robot.cavity1.SurfacePressureConstraint.value"].getValueString()
         print(pressureValue1)
         pressureValue1 = float(pressureValue1)
-        target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(0.1)
+        #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(0.1)
         print(dir(target.two_cell_robot.cavity1.SurfacePressureConstraint))
-
+        
         
         print(target.two_cell_robot.cavity1.SurfacePressureConstraint.pressure.value)
-        target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(10.0)
-
+        #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(10.0)
+        validation_value = target["two_cell_robot.dofs"].position
+        checklist.append(np.array(validation_value[312])) #want 312
 
         print(factor)
 
@@ -158,6 +189,7 @@ def createScene(rootNode):
         # save the various data.
         runtime = timeit.default_timer() - start
         print("runtime", runtime)
+        np.save("v1.npy", np.array(checklist))
         sys.exit(0)
 
     def getObject(self, name):
