@@ -32,7 +32,6 @@ class SceneDefinition:
 
         self.rotation = [0.0, 0.0, 0.0]
         self.translation = [0.0, 0.0, 0.0]
-        self.scale = "1.0, 1.0, 1.0"
         
         # this will be the base of the robot in the scene graph
         self.volume = None
@@ -127,30 +126,24 @@ class SceneDefinition:
                 with self.rootNode[f"volume.cavity_{i}_{j}_{k}.SurfacePressureConstraint.value"].writeableArray() as wa:
                     wa[0] = act[ijk]
                     
+    def observation(self):
+        return self.rootNode.volume.dofs.position.value
         
-        
-
-
-
 
 
 def createScene(rootNode):
-    dt = 0.001  # set the time step for the simulator
     
     def my_animation(target, scn, factor):
-        if factor > 0.5:
-            scn.action(np.array([[[10, 10]]]))
-        print(factor)
-    
-    # the exit func is called when duration of time has elapsed, it marks the simulation time
-    # saves it, and saves the collected data to an array. And exits the simulation with sys exit
-    def ExitFunc(target, factor):
-        # save the various data.
-        # runtime = timit.default_timer() - start
-        print("runtime")
-        # sys.exit(0)
-        # Sofa.Simulation.reset()
-    
+        if factor > 0.1:
+            scn.action(np.array([[[3*np.sin(factor*np.pi*2),
+                                   3*np.sin(3*factor*np.pi*2)]]]))
+        
+        print("State: ", scn.observation())
+        
+    def ExitFunc(target, scn, factor):
+        
+        print("Done with animation")
+        
     def getObject(self, name):
         return name
     
@@ -159,6 +152,8 @@ def createScene(rootNode):
 
     path = os.path.dirname(os.path.abspath(__file__)) + '/'
     meshpath = path + "mesh/"
+    
+    # it is 1x1x2 with a cavity in both positions
     design = np.array([[[0, 0]]])
     scn = SceneDefinition(rootNode, design=design, meshFolder=meshpath, with_gui=True)
 

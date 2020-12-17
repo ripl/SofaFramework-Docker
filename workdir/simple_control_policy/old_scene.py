@@ -170,7 +170,7 @@ def createScene(rootNode):
             if factor < 0.4:
                 wa[0] = 0.0
             else:
-                wa[0] = 20
+                wa[0] =1.0
         
         print(target.two_cell_robot.cavity1.SurfacePressureConstraint.pressure.value)
         #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(10.0)
