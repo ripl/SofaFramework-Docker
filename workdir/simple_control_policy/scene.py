@@ -12,6 +12,7 @@ import time
 import math
 import numpy as np
 import timeit
+import Sofa.Simulation
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 meshpath = path+"mesh/"
@@ -164,48 +165,54 @@ def createScene(rootNode):
     '''
 
     # simulation timer
-    start = timeit.default_timer()
-    checklist = []
+    #start = timeit.default_timer()
     #animation function called at each step
     def my_animation(target, factor):
         #factor = factor*2*np.pi
+
         pressureValue1 = target["two_cell_robot.cavity1.SurfacePressureConstraint.value"].getValueString()
+        try:
+            pressureValue1 = target.two_cell_robot.cavity3.SurfacePressureConstraint.value.getValueString()
+        except AttributeError:
+            print('this was an attribute error')
+        finally:
+            pass
         print(pressureValue1)
         pressureValue1 = float(pressureValue1)
         #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(0.1)
-        print(dir(target.two_cell_robot.cavity1.SurfacePressureConstraint))
-        
+        #print(dir(target.two_cell_robot.cavity1.SurfacePressureConstraint))
+        with target.two_cell_robot.cavity1.SurfacePressureConstraint.value.writeableArray() as wa:
+            if factor < 0.4:
+                wa[0] = 0.0
+            else:
+                wa[0] = 0.2
         
         print(target.two_cell_robot.cavity1.SurfacePressureConstraint.pressure.value)
         #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(10.0)
-        validation_value = target["two_cell_robot.dofs"].position
-        checklist.append(np.array(validation_value[312])) #want 312
-        if factor > 0.99:
-             #np.save("/home/sofauser/workdir/v1.npy", np.array(checklist))
-             np.save("/home/sofauser/workdir/simple_control_policy/runsofa.npy", np.array(checklist))
         print(factor)
 
     # the exit func is called when duration of time has elapsed, it marks the simulation time
     # saves it, and saves the collected data to an array. And exits the simulation with sys exit
     def ExitFunc(target, factor):
         # save the various data.
-        runtime = timeit.default_timer() - start
-        print("runtime", runtime) 
-        f = open("demofile3.txt", "w")
-        f.write("tracer4a975fc53a215f54")
-        f.close()
-
-        sys.exit(0)
+        #runtime = timit.default_timer() - start 
+        print("runtime") 
+        #sys.exit(0)
+        #Sofa.Simulation.reset()
 
     def getObject(self, name):
         return name
     # this is the Sofa animation function we pass it our animation function
     # and along with the exit function.
+
+    
     createSceneReal(rootNode, dt)
     
-    AnimationManager(rootNode)
-    addAnimation(my_animation, {"target": rootNode}, duration=2.0, mode="once", onDone=ExitFunc)
-
+    def add_animation():
+        AnimationManager(rootNode)
+        addAnimation(my_animation, {"target": rootNode}, duration=0.2, mode="once", onDone=ExitFunc)
+    
+    add_animation()
     return rootNode
     
 

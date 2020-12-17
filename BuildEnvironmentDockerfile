@@ -1,14 +1,13 @@
-###############################################################################
+##############################################################################
 # RL framework from github.com/cbschaff/dl
-###############################################################################
+##############################################################################
 
 FROM nvidia/cudagl:10.1-devel-ubuntu18.04
 
 RUN apt-get update && apt-get upgrade -y
 
 # Install packages
-RUN apt-get install -y wget git vim libsm6 libxext6 libxrender-dev ffmpeg \
-                       python-opengl
+RUN apt-get install -y wget git vim libsm6 libxext6 libxrender-dev ffmpeg python-opengl
 
 # install anaconda
 RUN wget https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
@@ -27,21 +26,16 @@ RUN pip install gin-config
 RUN pip install gym[atari]
 RUN pip install gym[box2d]
 
-# Add a directory for python packages to be mounted
-ENV PYTHONPATH /rl/dl/dl:$PYTHONPATH
+
 
 RUN apt-get install -y freeglut3-dev
 RUN conda install -y PyOpenGL
 RUN pip install pygame PyOpenGL_accelerate
 
-RUN mkdir /rl && cd /rl && \
-    git clone https://github.com/cbschaff/dl.git && \
-    git checkout 3957a012827acb3c510ae7c5ab89099f8ea8975f
 
-###############################################################################
-# Sofa build env from:
-#  https://hub.docker.com/r/sofaframework/sofabuilder_ubuntu/dockerfile
-############################################################################### 
+
+# Add a directory for python packages to be mounted
+ENV PYTHONPATH /pkgs:$PYTHONPATH
 
 
 SHELL ["/bin/bash", "-c"]
@@ -128,16 +122,17 @@ ENV VM_HAS_CGAL="true"
 ENV VM_CGAL_PATH="/usr/local/lib/cmake/CGAL"
 
 # Install CUDA
-RUN apt-get install -y nvidia-cuda-toolkit
+#RUN apt-get install -y nvidia-cuda-toolkit
+RUN apt-get -o Dpkg::Options::="--force-overwrite" install --fix-broken -y nvidia-cuda-toolkit
 ENV VM_HAS_CUDA="true"
 ENV VM_CUDA_HOST_COMPILER="/usr/bin/gcc-6"
 ENV VM_CUDA_ARCH="sm_50"
 
-###############################################################################
+#############################################################################################
 # Sofa-Framework Build Support End
-###############################################################################
+#############################################################################################
 # Install Plugins and build Begin
-###############################################################################
+#############################################################################################
 
 WORKDIR /builds
 
@@ -184,8 +179,7 @@ RUN python -m pip install ipykernel plotly iplot
 RUN pip3 install pybind11 && pip3 install "pybind11[global]"
 
 # Make a build directory to work in
-RUN mkdir -p /builds/src && mkdir -p /builds/build/master && \ 
-    mkdir -p /builds/plugins
+RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/plugins
 
 #clone the master version of Sofa
 RUN cd /builds/src && \
@@ -223,11 +217,11 @@ COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
 RUN rm /usr/bin/python && ln -s python3.7 /usr/bin/python
 
 
-# This Cache was made by using cmake-gui and x-docker and copying the resulting
-# cache to outside the docker container, if changing the versions of any of the
-# above git repos adds needed compile parameters or if you want to change the 
-# build you will need to stop the build at this point, run $x-docker run -it 
-# and then use cmake-gui to re-configure and create a new CMakeCache file.
+# This Cache was made by using cmake-gui and x-docker and copying the resulting cache
+# to outside the docker container, if changing the versions of any of the above git repos
+# adds needed compile parameters or if you want to change the build you will need to
+# stop the build at this point, run $x-docker run -it and then use cmake-gui to re-configure
+# and create a new CMakeCache file.
 COPY ./CMakeCachePython3.txt /builds/build/master/CMakeCache.txt
 
 # build sofa
@@ -241,47 +235,11 @@ RUN apt-get clean -y \
     && apt-get autoremove -y \
     && rm -rf /tmp/*
 
-###############################################################################
-# Build End
-###############################################################################
-# Project setup begin
-###############################################################################
+
 # make the build directory accessible to anyone
 RUN chmod -R a+wr /builds
-
-
-# Add SofaPython3 to plugin_list
-RUN cd /builds/build/master/lib && \
-    cp plugin_list.conf.default plugin_list.conf && \
-    echo $'\nSofaPython3 NO_VERSION\n' >> plugin_list.conf
-
-# runSofa cannot be used by the root user so this must be added.
-RUN useradd --create-home --shell /bin/bash sofauser && echo "sofauser:sofauser" | chpasswd && adduser sofauser sudo
-WORKDIR /home/sofauser
-
-
-# Set shell
-SHELL ["/bin/bash", "-c"]
-
-RUN mkdir -p /run/user/1000 && chown sofauser:sofauser /run/user/1000/
-
-USER sofauser
-ENV HOME="/home/sofauser"
-
-# Python2 kernel for jupyter notebook
-RUN python -m ipykernel install --user
-
-# set up environment with bashrc
-RUN echo 'source /opt/qt512/bin/qt512-env.sh && exec "$@"' >> /home/sofauser/.bashrc
-RUN echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /home/sofauser/.bashrc
-RUN echo 'export PYTHONPATH=/builds/build/master/lib/python3/site-packages:/builds/plugins/SofaPython3/splib:/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python3/src:/builds/plugins/SoftRobots/python3:$PYTHONPATH' >> /home/sofauser/.bashrc 
-RUN echo 'export PATH=/builds/build/master/bin:$PATH' >> /home/sofauser/.bashrc
-RUN echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /home/sofauser/.bashrc
-RUN echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /home/sofauser/.bashrc
-RUN echo 'export SOFA_ROOT=/builds/build/master/' >> /home/sofauser/.bashrc
-
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/simple_control_policy/ && /bin/bash"
-
+##############################################################################################
+# Build End
+##############################################################################################
 
 
