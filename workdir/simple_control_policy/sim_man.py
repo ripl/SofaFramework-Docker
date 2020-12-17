@@ -10,8 +10,9 @@ def entire(name):
 
     import Sofa
     import SofaRuntime
+    import numpy as np
 
-    from old_scene import createScene
+    from sceneClass import SceneDefinition
 
     SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT')+"lib/python3/site-packages")
     SofaRuntime.PluginRepository.print()
@@ -19,19 +20,22 @@ def entire(name):
     SofaRuntime.importPlugin('SofaOpenglVisual')
     SofaRuntime.importPlugin("SofaComponentAll")
 
-    class MyController(Sofa.Core.Controller):
-        def __init__(self, *args, **kwargs):
-                Sofa.Core.Controller.__init__(self,*args, **kwargs)
-                print("INITED")
-                
-        def onEvent(self, event):
-                print("Event: "+str(event))
+    #class MyController(Sofa.Core.Controller):
+    #    def __init__(self, *args, **kwargs):
+    #            Sofa.Core.Controller.__init__(self,*args, **kwargs)
+    #            print("INITED")
+    #
+    #    def onEvent(self, event):
+    #            print("Event: "+str(event))
                
                 
     def main():            
         root = Sofa.Core.Node("myroot")
-        root.addObject(MyController())
-        createScene(root)
+        #root.addObject(MyController())
+        path = os.path.dirname(os.path.abspath(__file__)) + '/'
+        meshpath = path + "mesh/"
+        design= np.array([[[0,0]]])
+        SceneDefinition( root, design=design, meshFolder=meshpath, with_gui=True)
         Sofa.Simulation.init(root)
         Sofa.Simulation.print(root)
         i = 0.0
