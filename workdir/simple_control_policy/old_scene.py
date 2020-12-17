@@ -1,27 +1,19 @@
-import Sofa
-import SofaRuntime
-import sys
+# encoding: utf-8
+#!/usr/bin/python3
+
 import os
-#from stlib3.physics.constraints import FixedBox
 from stlib3.scene import Scene
 from splib.animation import AnimationManager, addAnimation
-#from elasticmaterialobject import ElasticMaterialObject
-#from stlib3.physics.deformable.elasticmaterialobject import ElasticMaterialObject
-#from softrobots.actuators import PneumaticCavity
-import time
-import math
 import numpy as np
 import timeit
-import Sofa.Simulation
+
 
 path = os.path.dirname(os.path.abspath(__file__)) + '/'
 meshpath = path+"mesh/"
 
 def simulation_nodes(rootNode):
-    
     rootNode.addObject('FreeMotionAnimationLoop') 
     rootNode.addObject( 'EulerImplicitSolver', name='integration')
-
     rootNode.addObject( 'SparseLDLSolver', name="solver")
 
 # scene helper function, defining materials and constraints
@@ -34,7 +26,7 @@ def createSceneReal(rootNode, dt):
     # marks a required plugin and some visual style stuff
 
 
-    Scene(rootNode, gravity=[0,0,0], dt=dt) 
+    Scene(rootNode, gravity=[0,0,0], dt=dt)
 
     required_plugins = [ 'SofaTopologyMapping', 'SofaOpenglVisual', 'SofaSparseSolver', 'SofaConstraint', 'SofaGeneralLoader', 'SoftRobots']
     for i in required_plugins:
@@ -86,11 +78,7 @@ def createSceneReal(rootNode, dt):
     two_cell_robot = rootNode.addChild( 'two_cell_robot' )
 
     two_cell_robot.addObject('MeshGmshLoader', name='loader', filename=volumeMeshFileName, rotation=rotation, translation=translation, scale3d=scale)
-       
-
-
     
-
     # I am going to move EulerImplicitSolver, SparseLDLSolver, and FreeMotionAnimation to the root in the calling script.
     simulation_nodes(rootNode)
     #rootNode.addObject('FreeMotionAnimationLoop') 
@@ -104,7 +92,8 @@ def createSceneReal(rootNode, dt):
     two_cell_robot.addObject( 'TetrahedronSetTopologyContainer', src="@loader", name="container")
     two_cell_robot.addObject( 'MechanicalObject', template='Vec3d',  name='dofs') #topology="@container",
     two_cell_robot.addObject( 'UniformMass', totalMass=totalMass, name='mass')
-    two_cell_robot.addObject( 'TetrahedronFEMForceField', template='Vec3d', method='large', name='forcefield', poissonRatio=poissonRatio, youngModulus=youngModulus)
+    two_cell_robot.addObject( 'TetrahedronFEMForceField', template='Vec3d', method='large', name='forcefield',
+                              poissonRatio=poissonRatio, youngModulus=youngModulus)
 
 
     
@@ -137,6 +126,8 @@ def createSceneReal(rootNode, dt):
                         triangles='@topo.triangles', drawPressure='0', drawScale='0.0002', valueType="pressure")
     cavity2.addObject('BarycentricMapping', name='mapping', mapForces='false', mapMasses='false')
 
+
+    
     # two_cell_robot visualization
     two_cell_robotVisu = two_cell_robot.addChild('visu')
     two_cell_robotVisu.addObject('TriangleSetTopologyContainer', name='container')
@@ -156,13 +147,7 @@ def createScene(rootNode):
     dt = 0.001 # set the time step for the simulator
     # set length scale
 
-    '''
-    # information about the output.
-    info_arr = np.array([float(length_scale), 0, dt, num_nodes])
 
-    print "info array ", info_arr
-    print "number of nodes", num_nodes, " num end nodes ", len(fixed_const_lst), " num mid nodes ", len(middle_nodes_lst)
-    '''
 
     # simulation timer
     #start = timeit.default_timer()
@@ -181,11 +166,11 @@ def createScene(rootNode):
         pressureValue1 = float(pressureValue1)
         #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(0.1)
         #print(dir(target.two_cell_robot.cavity1.SurfacePressureConstraint))
-        with target.two_cell_robot.cavity1.SurfacePressureConstraint.value.writeableArray() as wa:
+        with target["two_cell_robot.cavity1.SurfacePressureConstraint.value"].writeableArray() as wa:
             if factor < 0.4:
                 wa[0] = 0.0
             else:
-                wa[0] = 0.2
+                wa[0] = 20
         
         print(target.two_cell_robot.cavity1.SurfacePressureConstraint.pressure.value)
         #target.two_cell_robot.cavity1.SurfacePressureConstraint.findData('value').value = str(10.0)
