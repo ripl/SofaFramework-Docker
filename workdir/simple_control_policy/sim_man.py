@@ -68,9 +68,11 @@ class scene_interface:
         return self.scene.observation()
         
     def reward(self, observation):
-        max_val = np.max(observation[:,:,2])
-        min_val = np.min(observation[:,:,2])
-        return -np.power( np.abs(max_val-min_val)-2.5, 2)
+        print(observation.shape)
+        max_val = np.max(observation[:,2])
+        min_val = np.min(observation[:,2])
+        print(max_val, min_val, " max val min val")
+        return -np.power( np.abs(max_val-min_val)-0.25, 2)
         
     def step(self, action):
         "applies action to the scene and returns observation, reward, done,info"
@@ -97,4 +99,7 @@ def main():
                                    3*np.sin(3*factor*np.pi*2)]]])
         _, reward, done, _  = a.step(action)
         
-        print(reward)
+        print('reward:', reward)
+ 
+if __name__ == '__main__':
+    main()
