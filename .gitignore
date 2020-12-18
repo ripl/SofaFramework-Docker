@@ -1,2 +1,9 @@
+# Ignore files from pycharm and temporary files
+.idea/**
+.idea/*
+.idea
+__pycache__
+__pycache__/*
+__pycache__/**
 workdir/MOR_test/mor_output/**
 .ipynb_checkpoints

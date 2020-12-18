@@ -1,8 +1,15 @@
+# Dockerfile for Reinforcment learning in Sofa-Framework
+# with SofaPython3
+# this section author is Arthur MacKeith -- amackeith@ttic.edu
+# it is adapted from two dockerfiles -- one for the rl and one for the 
+# sofa framework build environment
 ##############################################################################
-# RL framework from github.com/cbschaff/dl
+# Reinforcment learning framework from github.com/cbschaff/dl
 ##############################################################################
-
 FROM nvidia/cudagl:10.1-devel-ubuntu18.04
+
+
+SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get upgrade -y
 
@@ -33,13 +40,18 @@ RUN conda install -y PyOpenGL
 RUN pip install pygame PyOpenGL_accelerate
 
 
-
-# Add a directory for python packages to be mounted
+# Add a directory for rl python packages to be mounted
 ENV PYTHONPATH /pkgs:$PYTHONPATH
 
+###############################################################################
+# End reinforcment learning dependencies (from cbschaff/dl on github)
+###############################################################################
+# Begin Setting up Sofa-Framework Build Environment
+# adapted from sofaframework/sofabuilder_ubuntu on Dockerhub
+# https://hub.docker.com/r/sofaframework/sofabuilder_ubuntu
+###############################################################################
 
-SHELL ["/bin/bash", "-c"]
-
+# if you uncomment this it forces a build without caching
 #ADD "https://www.sofa-framework.org/rand/" ForceNoCache
 
 RUN apt-get update && apt-get upgrade -y
@@ -84,7 +96,8 @@ RUN apt-get install -y \
     liboce-ocaf-dev \
     libzmq3-dev liboscpack-dev
 ENV VM_HAS_ASSIMP="true"
- # BulletColisionDetection is broken
+
+# BulletColisionDetection is broken
 ENV VM_HAS_BULLET="disabled"
 ENV VM_HAS_OPENCASCADE="true"
 
@@ -129,9 +142,10 @@ ENV VM_CUDA_HOST_COMPILER="/usr/bin/gcc-6"
 ENV VM_CUDA_ARCH="sm_50"
 
 #############################################################################################
-# Sofa-Framework Build Support End
+# Sofa-Framework Build environment End
 #############################################################################################
 # Install Plugins and build Begin
+# this section author is Arthur MacKeith -- amackeith@ttic.edu
 #############################################################################################
 
 WORKDIR /builds
@@ -264,6 +278,8 @@ RUN mkdir -p /run/user/1000 && chmod 0700 /run/user/1000/
 
 # Python2 kernel for jupyter notebook
 RUN python -m ipykernel install --user
+
+#RUN conda remove -y --force pyqt qt qtawesome qtpy qtconsole
 
 # set up environment with bashrc
 RUN echo 'source /opt/qt512/bin/qt512-env.sh && exec "$@"' >> /etc/bash.bashrc
