@@ -4,22 +4,26 @@ docker: https://docs.docker.com/engine/install/ubuntu/
 
 
 
-This repo has contains scripts that will automate building the Sofa Framwork simulator with plugins needed to work with Soft Robots. (STLIB, SoftRobots, ModelOrderReduction).
+This repo has contains scripts that will automate building the Sofa Framwork simulator with plugins needed to work with Soft Robots. (STLIB
 
-To build run: ./build.sh
+To build run: 
+
+"$ ./build.sh" 
+
+Note: this can take >4 hrs on the first build.
 
 
 To launch use ./launch_docker.sh, this will mount /workdir to the home directory of the user in the docker container.
 
-To see the problem with Model Order reduction run:
+To view the sample scene:
 
-"$ cd /home/sofauser/workdir/MOR_test"
+"$ cd /home/sofauser/workdir/simple_control_policy"
 
-"$ jupyter-notebook DiskModelOrderReduction.ipynb"
+To see it with a the runSofa gui do:
+"$ runSofa sceneClass.py"
 
-and open the link that is provided  http://localhost:8888/?token=SomethingSomethingSomething to view in your local browser
-
-Inside the ipynb you should be able to run each of the cells until you get to phase3() where the error should appear.
+To run within a python script do:
+"$ python simulation_wrapper.py"
 
 
 
