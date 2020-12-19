@@ -272,8 +272,8 @@ WORKDIR /home/sofauser
 SHELL ["/bin/bash", "-c"]
 
 RUN mkdir -p /run/user/1000 && chmod 0700 /run/user/1000/
-#USER sofauser
-#ENV HOME="/home/sofauser"
+USER sofauser
+ENV HOME="/home/sofauser"
 
 
 # Python2 kernel for jupyter notebook
