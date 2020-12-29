@@ -220,20 +220,20 @@ RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/pl
 #clone the master version of Sofa
 RUN cd /builds/src && \
     git clone https://github.com/sofa-framework/sofa.git . && \
-    git checkout v20.12_beta && \
-    git checkout 184206f126acf0c5d45416fc23cb37baf1971fa5
+    git checkout v20.12_beta 
+#    git checkout 184206f126acf0c5d45416fc23cb37baf1971fa5
 
 # clone specific version of STLIB, SoftRobots, and ModelOrderReduction
 RUN cd /builds/plugins && \
-    git clone https://github.com/SofaDefrost/STLIB.git && \
-    cd STLIB && \
-    git checkout sofaPython3 && \
-    git checkout f2d7f37
+    git clone https://github.com/SofaDefrost/STLIB.git 
+#    cd STLIB && \
+#    git checkout sofaPython3 && \
+#    git checkout f2d7f37
 
 RUN cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/SoftRobots.git && \
-    cd SoftRobots && \
-    git checkout e762f8759dfe812979bb92b1caf2aa18233d80a8
+    cd SoftRobots 
+#    git checkout e762f8759dfe812979bb92b1caf2aa18233d80a8
 
 # MOR NOT supported by python3
 #RUN cd /builds/plugins && \
@@ -292,7 +292,7 @@ RUN cd /builds/build/master/lib && \
 RUN sudo mkdir -p /run/user/1000 && sudo chmod 0700 /run/user/1000/
 
 # set up environment with bashrc
-RUN sudo echo 'source /opt/qt512/bin/qt512-env.sh && exec "$@"' >> /etc/bash.bashrc
+RUN sudo echo 'source /opt/qt512/bin/qt512-env.sh && sudo exec "$@"' >> /etc/bash.bashrc
 RUN sudo echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /etc/bash.bashrc
 RUN sudo echo 'export PYTHONPATH=/builds/build/master/lib/python3/site-packages:/builds/plugins/SofaPython3/splib:/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python3/src:/builds/plugins/SoftRobots/python3:$PYTHONPATH' >> /etc/bash.bashrc
 RUN sudo echo 'export PATH=/builds/build/master/bin:$PATH' >> /etc/bash.bashrc
