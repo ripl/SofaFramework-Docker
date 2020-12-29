@@ -211,6 +211,7 @@ RUN python -m pip install ipykernel plotly iplot
 
 RUN python -m pip install pybind11 && python -m pip install "pybind11[global]"
 
+RUN conda remove --force pyqt qt qtawesome qtconsole qtpy
 
 # Make a build directory to work in
 RUN sudo chown -R sofauser:sofauser /builds
@@ -289,7 +290,7 @@ RUN cd /builds/build/master/lib && \
 #### user used to be here
 
 
-RUN sudo mkdir -p /run/user/1000 && sudo chmod 0700 /run/user/1000/
+RUN sudo mkdir -p /run/user/1000 && sudo chown sofauser:sofauser /run/user/1000/
 
 # set up environment with bashrc
 RUN sudo chmod a+rw /etc/bash.bashrc
@@ -300,6 +301,7 @@ RUN sudo echo 'export PATH=/builds/build/master/bin:$PATH' >> /etc/bash.bashrc
 RUN sudo echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /etc/bash.bashrc
 RUN sudo echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /etc/bash.bashrc
 RUN sudo echo 'export SOFA_ROOT=/builds/build/master/' >> /etc/bash.bashrc
+RUN sudo echo 'export LD_LIBRARY_PATH=/home/sofauser/anaconda3/lib:$LD_LIBRARY_PATH' >> /etc/bash.bashrc
 
 
 
