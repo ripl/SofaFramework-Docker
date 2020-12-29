@@ -42,7 +42,7 @@ class SceneDefinition:
         self.volume = None
 
         # TODO: check if Scene() is actually needed (I don't think it is)
-        #Scene(self.rootNode, gravity=[0, 0.0, 0], dt=dt)
+        Scene(self.rootNode, gravity=[0, 0.0, 0], dt=dt)
 
         required_plugins = ['SofaTopologyMapping', 'SofaOpenglVisual', 'SofaSparseSolver', 'SofaConstraint',
                             'SofaGeneralLoader', 'SoftRobots']
@@ -63,7 +63,7 @@ class SceneDefinition:
         fix_string = " "
         for i, pos in enumerate(vertexes):
             if pos[2] == 0.0:
-                print(i,pos)
+                #print(i,pos)
                 fix_string = fix_string + " " + str(i)
         
         # this adds a constraint that fixes these vertexes
@@ -183,7 +183,7 @@ def createScene(rootNode):
         exit()
     
     # this is where the example mesh is stored in the docker file.
-    meshpath = 'home/sofauser/workdir/simple_control_policy/mesh/'
+    meshpath = '/home/sofauser/workdir/simple_control_policy/mesh/'
     
     # it is 1x1x2 with a cavity in both positions
     design = np.array([[[0, 0]]])
@@ -192,6 +192,6 @@ def createScene(rootNode):
     # these two lines hook the animation function defined above to the scene graph
     # and makes it so it is run at every time step.
     AnimationManager(rootNode)
-    addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=0.2, mode="once", onDone=ExitFunc)
+    addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=2.2, mode="once", onDone=ExitFunc)
 
     return rootNode
