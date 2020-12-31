@@ -8,9 +8,11 @@ import importlib
 import SofaRuntime
 import Sofa.Gui
 
+SofaRuntime.importPlugin('SofaOpenglVisual')
 
 import numpy as np
-import sceneClass
+
+
 
 print ("Supported GUIs are " + Sofa.Gui.GUIManager.ListSupportedGUI(","))
 
@@ -29,20 +31,35 @@ SofaRuntime.importPlugin('SofaOpenglVisual')
 root = Sofa.Core.Node("myroot")
 
 # create the scene
+import sceneClass
 design= np.array([[[0, 0]]])
 dt = 0.001
 max_steps=300
 meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/'
-scene = sceneClass.SceneDefinition(root, design=design,
-                          meshFolder=meshFolder, with_gui=True, debug=False)
+#scene = sceneClass.SceneDefinition(root, design=design,
+#                          meshFolder=meshFolder, with_gui=True, debug=False)
 
 
+
+def Sphere(rootNode, name, position, color):
+	#Creating the sphere
+	sphere = rootNode.addChild(name)
+	sphere.addObject('MechanicalObject', name="mstate", template="Rigid3", position=position)
+
+    	#### Visualization of the sphere
+	sphereVisu = sphere.addChild("VisualModel")
+	sphereVisu.loader = sphereVisu.addObject('MeshObjLoader', name="loader", filename="mesh/ball.obj", scale=0.5)
+	sphereVisu.addObject('OglModel', name="model", src="@loader", color=color)
+	sphereVisu.addObject('RigidMapping')
+	return sphere
+
+Sphere(root, "hi", "0 0 0", "0 1 0")
 # Initialize all components found in the scene
 Sofa.Simulation.init(root)
-print(root)
+
 
 # Launch the GUI
 Sofa.Gui.GUIManager.Init("simple_scene", "qt")
-Sofa.Gui.GUIManager.createGUI(root)
+Sofa.Gui.GUIManager.createGUI(root, __file__)
 Sofa.Gui.GUIManager.MainLoop(root)
-Sofa.Gui.GUIManager.closeGUI()
+#Sofa.Gui.GUIManager.closeGUI()
