@@ -6,11 +6,12 @@
 import sys
 import os
 import importlib
+import time
 import Sofa
 import SofaRuntime
 import Sofa.Gui
-
-
+from gym import spaces
+from gym.utils import seeding
 import numpy as np
 import sceneClass
 
@@ -27,10 +28,10 @@ import sceneClass
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
-    def __init__(self, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
+    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
                  debug=False):
-
+        
         # it is 1x1x2 with a cavity in both positions
         
         # For now: Design is a 3 dim array that specifies if it is cavity or material
@@ -58,14 +59,54 @@ class scene_interface:
         self.current_step = 0
         
         self.debug = debug
-        self.reset()
+        self.debug_line_numb = 0
+        self.reset_count = 0
+        self.msg = ""
+
+        # things requried by DL
+        self.env_id = env_id
+        self.metadata = None
+        self.spec = None
+        self.reward_range = (-100000, 100000)
+        self.action_space = spaces.Box(low=0.0, high=6.0, shape=design.shape,
+                                       dtype=np.float32)
+        self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
+                                            shape=(2802,), dtype=np.float32)
+
+        # start the scene
+        obs = self.reset()
+
+        
+        
+        
     
+        
+    def debug_output(self, output, filename="/home/sofauser/workdir/debug_output.txt"):
+        self.msg = str(self.env_id) + " " + str(self.reset_count) + " " + \
+                   str(self.current_step) + " " \
+                   + str(self.debug_line_numb) \
+                   + " " + output + "\n"
+        file1 = open(filename, "a")  # append mode
+        file1.write(self.msg)
+        file1.close()
+        self.debug_line_numb += 1
+        
+    def seed(self, seed=None):
+        
+        """Seed the PRNG of this space. """
+        self._np_random, seed = seeding.np_random(seed)
+        return [seed]
+        
     def reset(self):
         """Reset the simulation, return the initial observation"""
         self.root = None
         self.scene = None
         self.sim_time = 0.0
         self.current_step = 0
+        self.debug_line_numb = 0
+        self.reset_count += 1
+        self.debug_line_numb = 0
+        self.msg = ""
         
         #importlib.reload(os)
         #importlib.reload(Sofa)
@@ -99,32 +140,71 @@ class scene_interface:
             Sofa.Simulation.print(self.root)
         
 
-        return self.scene.observation()
+        return self.get_observation()
+    
+    def close(self):
+        pass
         
     def reward(self, observation):
         """Returns reward given an observation"""
         # for the time being this is just measuring if the robot can stretch to
         # 1.25 of its original length with dense reward.
+        '''
+        observation = observation.reshape(len(observation)//3, 3)
+        
+        max_val = np.max(observation[:, 2])
+        min_val = np.min(observation[:, 2])
+        for i in range(3):
+            max_val = np.max(observation[:, i])
+            min_val = np.min(observation[:, i])
+            print("MMMMM", i, max_val- min_val)
+        '''
+        max_val = np.max(observation)
+        min_val = np.min(observation)
+        
+        self.debug_output(" max val "+str(max_val)
+                              +" min val "+str(min_val))
+        
+        rwd = -np.power( np.abs(max_val-min_val)-0.25, 2)+0.0025
 
-        max_val = np.max(observation[:,2])
-        min_val = np.min(observation[:,2])
-        if self.debug:
-            print(max_val, min_val, " max val min val")
+        #if rwd < self.reward_range[0]:
+        #    rwd = self.reward_range[0]
         
-        return -np.power( np.abs(max_val-min_val)-0.25, 2)
+        self.debug_output(repr(rwd))
         
+        return rwd
+        
+    def get_observation(self):
+        observation = self.scene.observation().flatten()
+        if np.isnan(np.sum(observation)):
+            self.debug_output("found nan in observation "+str(time.time()),
+                              filename="/home/sofauser/workdir/debug_nan.txt")
+        np.clip(observation, self.observation_space.low,
+                self.observation_space.high, out=observation)
+        
+        return observation
+    
     def step(self, action):
         "applies action to the scene and returns observation, reward, done,info"
         # action: 3d array same shape as design. 
         # For now: the action array is the pressure in each cavity at each position
         # in the lattice. If there is no corresponding cavity to a non-zero value
         # nothing is done with that non-zero value.
+        
+        if np.isnan(np.sum(action)):
+            self.debug_output("found nan in action "+str(time.time()),
+                              filename="/home/sofauser/workdir/debug_nan.txt")
+            
+        np.clip(action, self.action_space.low, self.action_space.high, out=action)
+        
+        self.debug_output(repr(action))
+        
 
 
         # step the clock
         self.current_step += 1
         self.sim_time += self.dt 
-        done = self.max_steps < self.current_step
+        done = self.max_steps <= self.current_step
 
         # apply the action
         self.scene.action(action)
@@ -133,41 +213,34 @@ class scene_interface:
         Sofa.Simulation.animate(self.root, self.dt)
         
         # get the objservation and calculate the reward
-        obs = self.scene.observation()
+        obs = self.get_observation()
+        
         rwrd = self.reward(obs)
 
-        return obs, rwrd, done, None
+        return obs, rwrd, done, {}
 
         
         
 
 def main():
-    a = scene_interface(design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
+    a = scene_interface(0, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/')
     
     done = False
     
-    while not done:
-        factor = a.current_step / a.max_steps
-        action = np.array([[[3*np.sin(factor*np.pi*2),
-                                   3*np.sin(3*factor*np.pi*2)]]])
-        obs, reward, done, info  = a.step(action)
-        
-        print('reward:', reward)
-
-    a.reset()
-    
-    done = False
 
     while not done:
         factor = a.current_step / a.max_steps
         action = np.array([[[3*np.sin(factor*np.pi*2),
                                    3*np.sin(3*factor*np.pi*2)]]])
+        #action = action*0 + 7
         obs2, reward, done, info  = a.step(action)
 
         print('reward:', reward)
+        print('action:', action)
 
-    print(np.sum(obs2-obs))
  
+
 if __name__ == '__main__':
     main()
+

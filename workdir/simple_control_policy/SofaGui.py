@@ -25,6 +25,7 @@ SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT') + "lib/python3/
 # Register all the common component in the factory.
 SofaRuntime.importPlugin('SofaOpenglVisual')
 SofaRuntime.importPlugin("SofaComponentAll")
+SofaRuntime.importPlugin('SofaOpenglVisual')
 root = Sofa.Core.Node("myroot")
 
 # create the scene

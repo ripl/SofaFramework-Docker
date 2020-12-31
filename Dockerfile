@@ -302,7 +302,7 @@ RUN sudo echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /etc/bash.bashrc
 RUN sudo echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /etc/bash.bashrc
 RUN sudo echo 'export SOFA_ROOT=/builds/build/master/' >> /etc/bash.bashrc
 RUN sudo echo 'export LD_LIBRARY_PATH=/home/sofauser/anaconda3/lib:$LD_LIBRARY_PATH' >> /etc/bash.bashrc
-
+RUN sudo echo 'export PYTHONPATH=/home/sofauser/workdir/simple_control_policy:$PYTHONPATH' >> /etc/bash.bashrc
 
 
 

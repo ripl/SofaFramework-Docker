@@ -171,10 +171,11 @@ def createScene(rootNode):
     def my_animation(target, scn, factor):
         # this animation makes the two cavities oscillate at different
         # frequencies
-        if factor > 0.04:
-            scn.action(np.array([[[3*np.sin(factor*np.pi*2),
-                                   3*np.sin(3*factor*np.pi*2)]]]))
-        
+        action = np.array([[[3*np.sin(factor*np.pi*2),
+                               3*np.sin(3*factor*np.pi*2)]]])
+        #action = action - action + 7
+        scn.action(action)
+    
         print(factor)
         #print("State: ", scn.observation())
         
