@@ -30,7 +30,12 @@ Sphere(root, "hi", "0 0 0", None)
 Sofa.Simulation.init(root)
 
 # Launch the GUI
-Sofa.Gui.GUIManager.Init("simple_scene", "qt")
+Sofa.Gui.GUIManager.Init("simple_scene", "qglviewer")
 Sofa.Gui.GUIManager.createGUI(root, __file__)
+
+print(dir(Sofa.Gui.GUIManager.SaveScreenshot('akm.apng')))
+print(Sofa.Gui.GUIManager.SaveScreenshot.__doc__)
 Sofa.Gui.GUIManager.MainLoop(root)
+
+
 Sofa.Gui.GUIManager.closeGUI()
