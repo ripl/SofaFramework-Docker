@@ -1,0 +1,164 @@
+# Dockerfile for Reinforcment learning in Sofa-Framework
+# with SofaPython3
+# this section author is Arthur MacKeith -- amackeith@ttic.edu
+# it is adapted from two dockerfiles -- one for the rl and one for the 
+# sofa framework build environment
+##############################################################################
+# Reinforcment learning framework from github.com/cbschaff/dl
+##############################################################################
+FROM nvidia/cudagl:10.1-devel-ubuntu18.04
+
+RUN apt-get update --fix-missing && apt-get upgrade -y
+
+RUN apt-get install sudo
+
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# runSofa cannot be used by the root user so this must be added.
+RUN adduser --disabled-password --gecos '' sofauser && adduser sofauser sudo
+#RUN useradd --create-home --shell /bin/bash sofauser && echo "sofauser:sofauser" | chpasswd && adduser sofauser sudo
+
+# Set shell
+
+USER sofauser
+SHELL ["/bin/bash", "-c"]
+WORKDIR /home/sofauser
+ENV HOME="/home/sofauser"
+
+
+
+
+# Install packages
+RUN sudo apt-get install -y wget git vim libsm6 libxext6 libxrender-dev ffmpeg python-opengl
+
+# install anaconda
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
+RUN sudo chown sofauser:  Anaconda3-2019.10-Linux-x86_64.sh
+RUN bash Anaconda3-2019.10-Linux-x86_64.sh -b -p $HOME/anaconda3
+RUN sudo rm Anaconda3-2019.10-Linux-x86_64.sh
+ENV PATH /home/sofauser/anaconda3/bin:$PATH
+RUN conda update conda
+RUN yes | conda update anaconda
+RUN yes | conda update --all
+RUN conda init bash
+RUN source ~/.bashrc
+
+# Install packages
+RUN conda install -y -c pytorch pytorch torchvision
+RUN conda install -y tensorflow-gpu==1.14.0
+RUN pip install gin-config
+RUN pip install gym[atari]
+RUN pip install gym[box2d]
+
+
+
+RUN sudo apt-get install -y freeglut3-dev
+RUN conda install -y PyOpenGL
+RUN pip install pygame PyOpenGL_accelerate
+
+
+# Add a directory for rl python packages to be mounted
+ENV PYTHONPATH /pkgs:$PYTHONPATH
+
+###############################################################################
+# End reinforcment learning dependencies (from cbschaff/dl on github)
+###############################################################################
+# Begin Setting up Sofa-Framework Build Environment
+# adapted from sofaframework/sofabuilder_ubuntu on Dockerhub
+# https://hub.docker.com/r/sofaframework/sofabuilder_ubuntu
+###############################################################################
+
+# if you uncomment this it forces a build without caching
+#ADD "https://www.sofa-framework.org/rand/" ForceNoCache
+
+RUN sudo apt-get update && sudo apt-get upgrade -y
+
+# Install tools
+RUN sudo apt-get install -y \
+    apt-utils \
+    git \
+    net-tools \
+    vim \
+    wget \
+    curl \
+    zip \
+    unzip
+
+# Install compilers
+RUN sudo apt-get install -y \
+    build-essential \
+    software-properties-common \
+    ninja-build \
+    gcc-7 g++-7 \
+    clang \
+    ccache
+
+# Install core deps
+RUN sudo apt-get install -y \
+    libglew-dev \
+    freeglut3-dev \
+    zlib1g-dev \
+    libeigen3-dev
+
+# Install plugins deps
+RUN sudo apt-get install -y \
+    python2.7-dev python-pip python-numpy python-scipy \
+    libpng-dev libjpeg-dev libtiff-dev \
+    libblas-dev \
+    liblapack-dev \
+    libsuitesparse-dev \
+    libavcodec-dev libavformat-dev libavutil-dev libswscale-dev \
+    libassimp-dev \
+    libbullet-dev \
+    liboce-ocaf-dev \
+    libzmq3-dev liboscpack-dev
+ENV VM_HAS_ASSIMP="true"
+
+# BulletColisionDetection is broken
+ENV VM_HAS_BULLET="disabled"
+ENV VM_HAS_OPENCASCADE="true"
+
+# Install CMake
+ADD https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0-Linux-x86_64.sh /tmp
+RUN sudo chmod a+x /tmp/cmake-3.12.0-Linux-x86_64.sh
+RUN sudo bash /tmp/cmake-3.12.0-Linux-x86_64.sh --skip-license --prefix=/usr/local
+
+
+# Install Qt
+RUN sudo add-apt-repository -y ppa:beineri/opt-qt-5.12.6-bionic \
+    && sudo apt-get update \
+    && sudo apt-get install -y qt512-meta-full qt512charts-no-lgpl
+ADD https://www.sofa-framework.org/wp-content/uploads/2020/06/QtInstallerFramework_3.0_Linux.zip /tmp
+RUN sudo unzip /tmp/QtInstallerFramework_3.0_Linux.zip -d /builds && sudo chmod -R a+x /builds/Qt
+ENV QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"
+ENV PATH="${QTIFWDIR}/bin:${PATH}"
+
+# Install Boost
+RUN sudo add-apt-repository -y ppa:mhier/libboost-latest \
+    && sudo apt-get update \
+    && sudo apt-get install -y libboost1.67-dev
+
+# Install CGAL
+# Due to dependencies on Boost and Qt, we have to build CGAL
+RUN mkdir -p /home/sofauser/tmp
+ADD https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.14.3/CGAL-4.14.3.tar.xz /home/sofauser/tmp
+RUN sudo chown sofauser:sofauser ~/tmp/CGAL-4.14.3.tar.xz
+RUN sudo apt-get install -y libgmp-dev libmpfr-dev
+#ENV LD_LIBRARY_PATH="/home/sofauser/anaconda3/lib:${LD_LIBRARY_PATH}"
+#RUN strip --remove-section=.note.ABI-tag /home/sofauser/anaconda3/lib/libQt5Core.so.5
+
+RUN sudo tar -xJf ~/tmp/CGAL-4.14.3.tar.xz --directory ~/tmp \
+    && cd ~/tmp/CGAL-4.14.3 \
+    && sudo mkdir build
+RUN  cd /home/sofauser/tmp/CGAL-4.14.3/build \
+    && sudo cmake -DCMAKE_BUILD_TYPE=Release -DWITH_CGAL_Core=TRUE -DWITH_CGAL_ImageIO=TRUE -DWITH_CGAL_Qt5=TRUE .. \
+    && sudo strip --remove-section=.note.ABI-tag /opt/qt512/lib/libQt5Core.so.5 \
+    && sudo make install
+
+
+
+#ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/simple_control_policy/ && /bin/bash"
+
+
+
