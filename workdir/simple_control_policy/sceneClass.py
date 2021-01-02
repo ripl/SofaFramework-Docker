@@ -62,12 +62,13 @@ class SceneDefinition:
         vertexes = self.rootNode.volume.loader.position.array()
         fix_string = " "
         for i, pos in enumerate(vertexes):
-            if pos[2] == 0.0:
-                #print(i,pos)
+            if -0.01 <= pos[2] <= 0.01:
+                print(i,pos)
+                
                 fix_string = fix_string + " " + str(i)
-        
+        print("FIXED POINTS", fix_string)
         # this adds a constraint that fixes these vertexes
-        self.volume.addObject("FixedConstraint", indices=fix_string)
+        self.volume.addObject("FixedConstraint", drawSize=1.0, indices=fix_string)
     
     
     def place_materials_and_cavities_and_solvers(self):
@@ -173,10 +174,12 @@ def createScene(rootNode):
         # frequencies
         action = np.array([[[3*np.sin(factor*np.pi*2),
                                3*np.sin(3*factor*np.pi*2)]]])
-        #action = action - action + 7
+        action = np.array([[[3 * np.sin(factor * np.pi * 2),]]])
+
+        action = action - action + 7
         scn.action(action)
-    
-        print(factor)
+        
+        print(scn.observation()[0])
         #print("State: ", scn.observation())
         
     def ExitFunc(target, scn, factor):
@@ -185,10 +188,13 @@ def createScene(rootNode):
         exit()
     
     # this is where the example mesh is stored in the docker file.
-    meshpath = '/home/sofauser/workdir/simple_control_policy/mesh/'
-    
+    #meshpath = '/home/sofauser/workdir/simple_control_policy/mesh/'
+    meshpath = '/home/sofauser/workdir/simple_control_policy/one_cell_robot_mesh/'
+
     # it is 1x1x2 with a cavity in both positions
-    design = np.array([[[0, 0]]])
+    #design = np.array([[[0, 0]]])
+    design = np.array([[[ 0]]])
+
     scn = SceneDefinition(rootNode, design=design, meshFolder=meshpath, with_gui=True)
     
     # these two lines hook the animation function defined above to the scene graph
