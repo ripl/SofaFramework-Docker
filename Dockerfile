@@ -8,7 +8,7 @@
 ##############################################################################
 FROM nvidia/cudagl:10.1-devel-ubuntu18.04
 
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update --fix-missing && apt-get upgrade -y
 
 RUN apt-get install sudo
 
@@ -143,12 +143,18 @@ RUN sudo add-apt-repository -y ppa:mhier/libboost-latest \
 ADD https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.14.3/CGAL-4.14.3.tar.xz /tmp
 RUN sudo chown sofauser:sofauser /tmp/CGAL-4.14.3.tar.xz
 RUN sudo apt-get install -y libgmp-dev libmpfr-dev
+#ENV LD_LIBRARY_PATH="/home/sofauser/anaconda3/lib:${LD_LIBRARY_PATH}"
+#RUN strip --remove-section=.note.ABI-tag /home/sofauser/anaconda3/lib/libQt5Core.so.5
 RUN sudo tar -xJf /tmp/CGAL-4.14.3.tar.xz --directory /tmp \
     && cd /tmp/CGAL-4.14.3 \
     && sudo mkdir build \
     && cd build \
     && sudo cmake -DCMAKE_BUILD_TYPE=Release -DWITH_CGAL_Core=TRUE -DWITH_CGAL_ImageIO=TRUE -DWITH_CGAL_Qt5=TRUE .. \
+    && sudo strip --remove-section=.note.ABI-tag /opt/qt512/lib/libQt5Core.so.5 \
     && sudo make install
+
+# the strip line  is for compatiblity with old kernel
+
 ENV VM_HAS_CGAL="true"
 ENV VM_CGAL_PATH="/usr/local/lib/cmake/CGAL"
 
