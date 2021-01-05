@@ -63,10 +63,10 @@ class SceneDefinition:
         fix_string = " "
         for i, pos in enumerate(vertexes):
             if -0.01 <= pos[2] <= 0.01:
-                print(i,pos)
+                # print(i,pos)
                 
                 fix_string = fix_string + " " + str(i)
-        print("FIXED POINTS", fix_string)
+        # print("FIXED POINTS", fix_string)
         # this adds a constraint that fixes these vertexes
         self.volume.addObject("FixedConstraint", drawSize=1.0, indices=fix_string)
     
