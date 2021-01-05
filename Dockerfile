@@ -314,7 +314,7 @@ RUN sudo echo 'export PYTHONPATH=/home/sofauser/workdir/simple_control_policy:$P
 
 # Python2 kernel for jupyter notebook
 RUN python -m ipykernel install --user
-
+RUN sudo apt-get install -y screen
 #BLENDER install
 #RUN sudo apt-get install -y build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
 #RUN mkdir /builds/blender-git
@@ -331,7 +331,7 @@ RUN python -m ipykernel install --user
 
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD /bin/bash -c "source ~/.bashrc && cd /home/sofauser/workdir/simple_control_policy/ && /bin/bash"
+CMD /bin/bash -c "source ~/.bashrc && cd /pkgs/dl/examples/sofa_start && /bin/bash"
 
 
 
