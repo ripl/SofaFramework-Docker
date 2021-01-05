@@ -71,7 +71,7 @@ class scene_interface:
         self.action_space = spaces.Box(low=0.0, high=6.0, shape=design.shape,
                                        dtype=np.float32)
         self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
-                                            shape=(2802,), dtype=np.float32)
+                                            shape=(3,), dtype=np.float32)
 
         # start the scene
         obs = self.reset()
@@ -150,15 +150,6 @@ class scene_interface:
         # for the time being this is just measuring if the robot can stretch to
         # 1.25 of its original length with dense reward.
         '''
-        observation = observation.reshape(len(observation)//3, 3)
-        
-        max_val = np.max(observation[:, 2])
-        min_val = np.min(observation[:, 2])
-        for i in range(3):
-            max_val = np.max(observation[:, i])
-            min_val = np.min(observation[:, i])
-            print("MMMMM", i, max_val- min_val)
-        '''
         max_val = np.max(observation)
         min_val = np.min(observation)
         
@@ -169,13 +160,20 @@ class scene_interface:
 
         #if rwd < self.reward_range[0]:
         #    rwd = self.reward_range[0]
-        
-        self.debug_output(repr(rwd))
-        
+        '''
+        #simplified reward is just the radius of the baloon"
+        rwd = np.linalg.norm(observation)
+        self.debug_output("observation: "+repr(observation) +"\nreward: "+repr(rwd))
+
         return rwd
         
     def get_observation(self):
-        observation = self.scene.observation().flatten()
+        
+        observation = self.scene.observation()
+        observation = observation[82] 
+        observation = observation.flatten()
+        #print(observation)
+        #observation = self.scene.observation().flatten()
         if np.isnan(np.sum(observation)):
             self.debug_output("found nan in observation "+str(time.time()),
                               filename="/home/sofauser/workdir/debug_nan.txt")
@@ -197,7 +195,7 @@ class scene_interface:
             
         np.clip(action, self.action_space.low, self.action_space.high, out=action)
         
-        self.debug_output(repr(action))
+        self.debug_output("action: " + repr(action))
         
 
 
@@ -223,17 +221,22 @@ class scene_interface:
         
 
 def main():
-    a = scene_interface(0, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
-                 meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/')
+    meshpath = '/home/sofauser/workdir/simple_control_policy/one_cell_robot_mesh/'
+
+    # it is 1x1x2 with a cavity in both positions
+    #design = np.array([[[0, 0]]])
+    design = np.array([[[ 0]]])
+
+    a = scene_interface(0, design=design, dt = 0.001, max_steps=300,
+                 meshFolder=meshpath)
     
     done = False
     
 
     while not done:
         factor = a.current_step / a.max_steps
-        action = np.array([[[3*np.sin(factor*np.pi*2),
-                                   3*np.sin(3*factor*np.pi*2)]]])
-        #action = action*0 + 7
+        action = 5*np.cos(factor*np.pi*2)*np.ones(design.shape)
+        action = action*0 + 7
         obs2, reward, done, info  = a.step(action)
 
         print('reward:', reward)
