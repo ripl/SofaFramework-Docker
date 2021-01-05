@@ -316,18 +316,18 @@ RUN sudo echo 'export PYTHONPATH=/home/sofauser/workdir/simple_control_policy:$P
 RUN python -m ipykernel install --user
 
 #BLENDER install
-RUN sudo apt-get install -y build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
-RUN mkdir /builds/blender-git
-RUN cd /builds/blender-git && \
-    git clone https://git.blender.org/blender.git
-
-RUN mkdir /builds/blender-git/lib && \
-    cd /builds/blender-git/lib && \
-    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64 
-
-RUN cd /builds/blender-git/blender && \
-    make update && \
-    make bpy
+#RUN sudo apt-get install -y build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
+#RUN mkdir /builds/blender-git
+#RUN cd /builds/blender-git && \
+#    git clone https://git.blender.org/blender.git
+#
+#RUN mkdir /builds/blender-git/lib && \
+#    cd /builds/blender-git/lib && \
+#    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64 
+#
+#RUN cd /builds/blender-git/blender && \
+#    make update && \
+#    make bpy
 
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
