@@ -161,8 +161,8 @@ class scene_interface:
         #if rwd < self.reward_range[0]:
         #    rwd = self.reward_range[0]
         '''
-        #simplified reward is just the radius of the baloon"
-        rwd = np.linalg.norm(observation)
+        #simplified reward is just the radius of the baloon", sub 2 to take away starting value, 0.25 to set desired point and add a little so it starts at zero again
+        rwd = -1.0*np.power(np.linalg.norm(observation)-2.0000000000000004 - 0.25, 2) + np.power(0.25,2)
         self.debug_output("observation: "+repr(observation) +"\nreward: "+repr(rwd))
 
         return rwd
