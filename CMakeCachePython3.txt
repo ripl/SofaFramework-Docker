@@ -479,6 +479,153 @@ CPACK_SOURCE_ZIP:BOOL=OFF
 //The directory containing a CMake configuration file for CSparse.
 CSparse_DIR:PATH=/builds/build/master/cmake
 
+//Compile device code in 64 bit mode
+CUDA_64_BIT_DEVICE_CODE:BOOL=ON
+
+//List of CUDA architectures (e.g. Pascal, Volta, etc) or compute
+// capability versions (6.1, 7.0, etc) to generate code for. Set
+// to Auto for automatic detection (default).
+CUDA_ARCH_LIST:STRING=Auto
+
+//Attach the build rule to the CUDA source file.  Enable only when
+// the CUDA source file is added to at most one target.
+CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE:BOOL=ON
+
+//Generate and parse .cubin files in Device mode.
+CUDA_BUILD_CUBIN:BOOL=OFF
+
+//Build in Emulation mode
+CUDA_BUILD_EMULATION:BOOL=OFF
+
+//"cudart" library
+CUDA_CUDART_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcudart.so
+
+//"cuda" library (older versions only).
+CUDA_CUDA_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libcuda.so
+
+//Directory to put all the output files.  If blank it will default
+// to the CMAKE_CURRENT_BINARY_DIR
+CUDA_GENERATED_OUTPUT_DIR:PATH=
+
+//Generated file extension
+CUDA_HOST_COMPILATION_CPP:BOOL=ON
+
+//Host side compiler used by NVCC
+CUDA_HOST_COMPILER:FILEPATH=/usr/bin/clang-8
+
+//Path to a program.
+CUDA_NVCC_EXECUTABLE:FILEPATH=/usr/local/cuda/bin/nvcc
+
+//Semi-colon delimit multiple arguments. during all build types.
+CUDA_NVCC_FLAGS:STRING=
+
+//Semi-colon delimit multiple arguments. during DEBUG builds.
+CUDA_NVCC_FLAGS_DEBUG:STRING=
+
+//Semi-colon delimit multiple arguments. during MINSIZEREL builds.
+CUDA_NVCC_FLAGS_MINSIZEREL:STRING=
+
+//Semi-colon delimit multiple arguments. during RELEASE builds.
+CUDA_NVCC_FLAGS_RELEASE:STRING=
+
+//Semi-colon delimit multiple arguments. during RELWITHDEBINFO
+// builds.
+CUDA_NVCC_FLAGS_RELWITHDEBINFO:STRING=
+
+//Propagate C/CXX_FLAGS and friends to the host compiler via -Xcompile
+CUDA_PROPAGATE_HOST_FLAGS:BOOL=ON
+
+//Path to a file.
+CUDA_SDK_ROOT_DIR:PATH=CUDA_SDK_ROOT_DIR-NOTFOUND
+
+//Compile CUDA objects with separable compilation enabled.  Requires
+// CUDA 5.0+
+CUDA_SEPARABLE_COMPILATION:BOOL=OFF
+
+//Path to a file.
+CUDA_TOOLKIT_INCLUDE:PATH=/usr/local/cuda/include
+
+//Toolkit location.
+CUDA_TOOLKIT_ROOT_DIR:PATH=/usr/local/cuda
+
+//Use the static version of the CUDA runtime library if available
+CUDA_USE_STATIC_CUDA_RUNTIME:BOOL=ON
+
+//Print out the commands run while compiling the CUDA source file.
+//  With the Makefile generator this defaults to VERBOSE variable
+// specified on the command line, but can be forced on with this
+// option.
+CUDA_VERBOSE_BUILD:BOOL=OFF
+
+//Version of CUDA as computed from nvcc.
+CUDA_VERSION:STRING=10.1
+
+//"cublas" library
+CUDA_cublas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libcublas.so
+
+//"cublas_device" library
+CUDA_cublas_device_LIBRARY:FILEPATH=CUDA_cublas_device_LIBRARY-NOTFOUND
+
+//"cudadevrt" library
+CUDA_cudadevrt_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcudadevrt.a
+
+//static CUDA runtime library
+CUDA_cudart_static_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcudart_static.a
+
+//"cufft" library
+CUDA_cufft_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcufft.so
+
+//"cupti" library
+CUDA_cupti_LIBRARY:FILEPATH=/usr/local/cuda/extras/CUPTI/lib64/libcupti.so
+
+//"curand" library
+CUDA_curand_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcurand.so
+
+//"cusolver" library
+CUDA_cusolver_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcusolver.so
+
+//"cusparse" library
+CUDA_cusparse_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libcusparse.so
+
+//"nppc" library
+CUDA_nppc_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppc.so
+
+//"nppial" library
+CUDA_nppial_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppial.so
+
+//"nppicc" library
+CUDA_nppicc_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppicc.so
+
+//"nppicom" library
+CUDA_nppicom_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppicom.so
+
+//"nppidei" library
+CUDA_nppidei_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppidei.so
+
+//"nppif" library
+CUDA_nppif_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppif.so
+
+//"nppig" library
+CUDA_nppig_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppig.so
+
+//"nppim" library
+CUDA_nppim_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppim.so
+
+//"nppist" library
+CUDA_nppist_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppist.so
+
+//"nppisu" library
+CUDA_nppisu_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppisu.so
+
+//"nppitc" library
+CUDA_nppitc_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnppitc.so
+
+//"npps" library
+CUDA_npps_LIBRARY:FILEPATH=/usr/local/cuda/lib64/libnpps.so
+
+//Path to a library.
+CUDA_rt_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/librt.so
+
 DPython_EXECUTABLE:FILEPATH=/usr/bin/python
 
 //Value Computed by CMake
@@ -658,6 +805,9 @@ MODULE_SOFAVALIDATION:BOOL=ON
 //The directory containing a CMake configuration file for Metis.
 Metis_DIR:PATH=/builds/build/master/cmake
 
+//The directory containing a CMake configuration file for MiniFlowVR.
+MiniFlowVR_DIR:PATH=MiniFlowVR_DIR-NOTFOUND
+
 //Value Computed by CMake
 ModelOrderReduction_BINARY_DIR:STATIC=/builds/build/master/external_directories/plugins/ModelOrderReduction
 
@@ -779,7 +929,7 @@ PLUGIN_SOFAASSIMP:BOOL=OFF
 PLUGIN_SOFACARVING:BOOL=OFF
 
 //Build the SofaCUDA plugin.
-PLUGIN_SOFACUDA:BOOL=OFF
+PLUGIN_SOFACUDA:BOOL=ON
 
 //Build the SofaDistanceGrid plugin.
 PLUGIN_SOFADISTANCEGRID:BOOL=OFF
@@ -921,6 +1071,29 @@ SOFABOUNDARYCONDITION_BUILD_TESTS:BOOL=ON
 
 //Compile the automatic tests
 SOFACONSTRAINT_BUILD_TESTS:BOOL=ON
+
+//Activate cublas support in CUDA (requires SOFACUDA_DOUBLE).
+SOFACUDA_CUBLAS:BOOL=OFF
+
+//Activate CUDPP (for RadixSort).
+SOFACUDA_CUDPP:BOOL=OFF
+
+//Activate double-precision support in CUDA (requires GT200+ GPU
+// and -arch sm_13 flag.
+SOFACUDA_DOUBLE:BOOL=OFF
+
+//Enable double-precision for sqrt/div... (requires compute capability
+//\n>= 2 and CUDA_VERSION > 3.0)
+SOFACUDA_DOUBLE_PRECISE:BOOL=OFF
+
+//Use IEEE 754-compliant floating point operations.
+SOFACUDA_PRECISE:BOOL=OFF
+
+//Activate THRUST (for RadixSort).
+SOFACUDA_THRUST:BOOL=ON
+
+//???
+SOFACUDA_VERBOSE_PTXAS:BOOL=OFF
 
 //Compile the automatic tests
 SOFAEXPORTER_BUILD_TESTS:BOOL=ON
@@ -1251,6 +1424,12 @@ SofaBoundaryCondition_test_BINARY_DIR:STATIC=/builds/build/master/modules/SofaBo
 
 //Value Computed by CMake
 SofaBoundaryCondition_test_SOURCE_DIR:STATIC=/builds/src/modules/SofaBoundaryCondition/SofaBoundaryCondition_test
+
+//Value Computed by CMake
+SofaCUDA_BINARY_DIR:STATIC=/builds/build/master/applications/plugins/SofaCUDA
+
+//Value Computed by CMake
+SofaCUDA_SOURCE_DIR:STATIC=/builds/src/applications/plugins/SofaCUDA
 
 //Value Computed by CMake
 SofaCommon_BINARY_DIR:STATIC=/builds/build/master/SofaKernel/SofaCommon
@@ -2011,6 +2190,9 @@ TinyXML_DIR:PATH=/builds/build/master/cmake
 //Use compressed row sparse format in the mappings
 USE_COMPRESSED_ROW_SPARSE:BOOL=ON
 
+//The directory containing a CMake configuration file for VolumetricRendering.
+VolumetricRendering_DIR:PATH=VolumetricRendering_DIR-NOTFOUND
+
 //Path to a file.
 ZLIB_INCLUDE_DIR:PATH=/usr/include
 
@@ -2221,7 +2403,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=161
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=162
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -2306,8 +2488,110 @@ CPACK_SOURCE_TXZ-ADVANCED:INTERNAL=1
 CPACK_SOURCE_TZ-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CPACK_SOURCE_ZIP
 CPACK_SOURCE_ZIP-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_64_BIT_DEVICE_CODE
+CUDA_64_BIT_DEVICE_CODE-ADVANCED:INTERNAL=1
+//List of intermediate files that are part of the cuda dependency
+// scanning.
+CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaBarycentricMapping.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaBaseVector.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaDiagonalMass.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaEllipsoidForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaFixedConstraint.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaHexahedronTLEDForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaLinearForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaLinearMovementConstraint.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaMechanicalObject.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaMeshMatrixMass.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaPenalityContactForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaPlaneForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaRigidMapping.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaScan.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaSort.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaSphereForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaSpringForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaStandardTetrahedralFEMForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaSubsetMapping.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaTetrahedralTensorMassForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaTetrahedronFEMForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaTetrahedronTLEDForceField.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaTriangularFEMForceFieldOptim.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaUniformMass.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_mycuda.cu.o.depend;/builds/build/master/applications/plugins/SofaCUDA/CMakeFiles/SofaCUDA.dir/sofa/gpu/cuda/SofaCUDA_generated_CudaVisualModel.cu.o.depend
+//ADVANCED property for variable: CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE
+CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_BUILD_CUBIN
+CUDA_BUILD_CUBIN-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_BUILD_EMULATION
+CUDA_BUILD_EMULATION-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_CUDART_LIBRARY
+CUDA_CUDART_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_CUDA_LIBRARY
+CUDA_CUDA_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_GENERATED_OUTPUT_DIR
+CUDA_GENERATED_OUTPUT_DIR-ADVANCED:INTERNAL=1
+//Returned GPU architectures from detect_gpus tool
+CUDA_GPU_DETECT_OUTPUT:INTERNAL='3.0 '
+//ADVANCED property for variable: CUDA_HOST_COMPILATION_CPP
+CUDA_HOST_COMPILATION_CPP-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_NVCC_EXECUTABLE
+CUDA_NVCC_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_NVCC_FLAGS
+CUDA_NVCC_FLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_NVCC_FLAGS_DEBUG
+CUDA_NVCC_FLAGS_DEBUG-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_NVCC_FLAGS_MINSIZEREL
+CUDA_NVCC_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_NVCC_FLAGS_RELEASE
+CUDA_NVCC_FLAGS_RELEASE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_NVCC_FLAGS_RELWITHDEBINFO
+CUDA_NVCC_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_PROPAGATE_HOST_FLAGS
+CUDA_PROPAGATE_HOST_FLAGS-ADVANCED:INTERNAL=1
+//This is the value of the last time CUDA_SDK_ROOT_DIR was set
+// successfully.
+CUDA_SDK_ROOT_DIR_INTERNAL:INTERNAL=CUDA_SDK_ROOT_DIR-NOTFOUND
+//ADVANCED property for variable: CUDA_SEPARABLE_COMPILATION
+CUDA_SEPARABLE_COMPILATION-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_TOOLKIT_INCLUDE
+CUDA_TOOLKIT_INCLUDE-ADVANCED:INTERNAL=1
+//This is the value of the last time CUDA_TOOLKIT_ROOT_DIR was
+// set successfully.
+CUDA_TOOLKIT_ROOT_DIR_INTERNAL:INTERNAL=/usr/local/cuda
+//This is the value of the last time CUDA_TOOLKIT_TARGET_DIR was
+// set successfully.
+CUDA_TOOLKIT_TARGET_DIR_INTERNAL:INTERNAL=/usr/local/cuda
+//ADVANCED property for variable: CUDA_VERBOSE_BUILD
+CUDA_VERBOSE_BUILD-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_VERSION
+CUDA_VERSION-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cublas_LIBRARY
+CUDA_cublas_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cublas_device_LIBRARY
+CUDA_cublas_device_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cudadevrt_LIBRARY
+CUDA_cudadevrt_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cudart_static_LIBRARY
+CUDA_cudart_static_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cufft_LIBRARY
+CUDA_cufft_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cupti_LIBRARY
+CUDA_cupti_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_curand_LIBRARY
+CUDA_curand_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cusolver_LIBRARY
+CUDA_cusolver_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_cusparse_LIBRARY
+CUDA_cusparse_LIBRARY-ADVANCED:INTERNAL=1
+//Location of make2cmake.cmake
+CUDA_make2cmake:INTERNAL=/usr/local/share/cmake-3.12/Modules/FindCUDA/make2cmake.cmake
+//ADVANCED property for variable: CUDA_nppc_LIBRARY
+CUDA_nppc_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppial_LIBRARY
+CUDA_nppial_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppicc_LIBRARY
+CUDA_nppicc_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppicom_LIBRARY
+CUDA_nppicom_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppidei_LIBRARY
+CUDA_nppidei_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppif_LIBRARY
+CUDA_nppif_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppig_LIBRARY
+CUDA_nppig_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppim_LIBRARY
+CUDA_nppim_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppist_LIBRARY
+CUDA_nppist_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppisu_LIBRARY
+CUDA_nppisu_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_nppitc_LIBRARY
+CUDA_nppitc_LIBRARY-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: CUDA_npps_LIBRARY
+CUDA_npps_LIBRARY-ADVANCED:INTERNAL=1
+//Location of parse_cubin.cmake
+CUDA_parse_cubin:INTERNAL=/usr/local/share/cmake-3.12/Modules/FindCUDA/parse_cubin.cmake
+//Location of run_nvcc.cmake
+CUDA_run_nvcc:INTERNAL=/usr/local/share/cmake-3.12/Modules/FindCUDA/run_nvcc.cmake
 //ADVANCED property for variable: EIGEN3_INCLUDE_DIR
 EIGEN3_INCLUDE_DIR-ADVANCED:INTERNAL=1
+//Details about finding CUDA
+FIND_PACKAGE_MESSAGE_DETAILS_CUDA:INTERNAL=[/usr/local/cuda][/usr/local/cuda/bin/nvcc][/usr/local/cuda/include][/usr/local/cuda/lib64/libcudart_static.a][v10.1()]
 //Details about finding Eigen3
 FIND_PACKAGE_MESSAGE_DETAILS_Eigen3:INTERNAL=[/usr/include/eigen3][TRUE][v(2.91.0)]
 //Details about finding GLEW
@@ -2430,10 +2714,14 @@ _Boost_NAMESPACE_LAST:INTERNAL=boost
 //Last used Boost_USE_MULTITHREADED value.
 _Boost_USE_MULTITHREADED_LAST:INTERNAL=TRUE
 _Python:INTERNAL=PYTHON
+//Result of TRY_COMPILE
+compile_result:INTERNAL=TRUE
 //ADVANCED property for variable: gtest_disable_pthreads
 gtest_disable_pthreads-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: gtest_force_shared_crt
 gtest_force_shared_crt-ADVANCED:INTERNAL=1
 //Directories where pybind11 and possibly Python headers are located
 pybind11_INCLUDE_DIRS:INTERNAL=/home/sofauser/anaconda3/include;/usr/include/python3.7m
+//Result of TRY_RUN
+run_result:INTERNAL=0
 
