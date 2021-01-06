@@ -160,10 +160,10 @@ ENV VM_CGAL_PATH="/usr/local/lib/cmake/CGAL"
 
 # Install CUDA
 #RUN sudo apt-get install -y nvidia-cuda-toolkit
-RUN sudo apt-get -o Dpkg::Options::="--force-overwrite" install --fix-broken -y nvidia-cuda-toolkit
-ENV VM_HAS_CUDA="true"
-ENV VM_CUDA_HOST_COMPILER="/usr/bin/gcc-6"
-ENV VM_CUDA_ARCH="sm_50"
+#RUN sudo apt-get -o Dpkg::Options::="--force-overwrite" install --fix-broken -y nvidia-cuda-toolkit
+#ENV VM_HAS_CUDA="true"
+#ENV VM_CUDA_HOST_COMPILER="/usr/bin/gcc-6"
+#ENV VM_CUDA_ARCH="sm_50"
 
 #############################################################################################
 # Sofa-Framework Build environment End
@@ -232,14 +232,14 @@ RUN cd /builds/src && \
 
 # clone specific version of STLIB, SoftRobots, and ModelOrderReduction
 RUN cd /builds/plugins && \
-    git clone https://github.com/SofaDefrost/STLIB.git && \ 
+    git clone https://github.com/SofaDefrost/STLIB.git && \
     cd STLIB && \
     git checkout sofaPython3 && \
     git checkout f2d7f37
 
 RUN cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/SoftRobots.git && \
-    cd SoftRobots && \ 
+    cd SoftRobots && \
     git checkout e762f8759dfe812979bb92b1caf2aa18233d80a8
 
 # MOR NOT supported by python3
@@ -323,14 +323,14 @@ RUN sudo apt-get install -y screen
 #
 #RUN mkdir /builds/blender-git/lib && \
 #    cd /builds/blender-git/lib && \
-#    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64 
+#    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64
 #
 #RUN cd /builds/blender-git/blender && \
 #    make update && \
 #    make bpy
 
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+#ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD /bin/bash -c "source ~/.bashrc && cd /pkgs/dl/examples/sofa_start && /bin/bash"
 
 
