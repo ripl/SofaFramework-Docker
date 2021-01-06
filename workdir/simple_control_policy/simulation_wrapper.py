@@ -68,7 +68,7 @@ class scene_interface:
         self.metadata = None
         self.spec = None
         self.reward_range = (-100000, 100000)
-        self.action_space = spaces.Box(low=0.0, high=6.0, shape=design.shape,
+        self.action_space = spaces.Box(low=0.0, high=7.0, shape=design.shape,
                                        dtype=np.float32)
         self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
                                             shape=(3,), dtype=np.float32)
@@ -162,7 +162,8 @@ class scene_interface:
         #    rwd = self.reward_range[0]
         '''
         #simplified reward is just the radius of the baloon", sub 2 to take away starting value, 0.25 to set desired point and add a little so it starts at zero again
-        rwd = -1.0*np.power(np.linalg.norm(observation)-2.0000000000000004 - 0.25, 2) + np.power(0.25,2)
+        rwd = -1.0*np.power(np.linalg.norm(observation)-2.0000000000000004 - 0.20, 2) + np.power(0.20,2)
+        rwd = rwd / 0.04
         self.debug_output("observation: "+repr(observation) +"\nreward: "+repr(rwd))
 
         return rwd
@@ -232,16 +233,16 @@ def main():
     
     done = False
     
-
+    total = 0
     while not done:
         factor = a.current_step / a.max_steps
         action = 5*np.cos(factor*np.pi*2)*np.ones(design.shape)
-        action = action*0 + 7
+        action = action*0 + 6.5
         obs2, reward, done, info  = a.step(action)
-
-        print('reward:', reward)
+        total += reward
+        print('reward:', reward, " total reward ", total)
         print('action:', action)
-
+   
  
 
 if __name__ == '__main__':
