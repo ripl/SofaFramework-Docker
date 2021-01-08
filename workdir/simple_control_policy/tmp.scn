@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<Node 	 >
+	<VisualStyle/>
+	<MeshGmshLoader/>
+	<MeshObjLoader/>
+	<DefaultAnimationLoop/>
+	<DefaultVisualManagerLoop/>
+	<InteractiveCamera/>
+	<Node 	 parents="@/"  >
+		<EulerImplicitSolver/>
+		<CGLinearSolver template="GraphScattered"/>
+		<TetrahedronSetTopologyContainer/>
+		<TetrahedronSetGeometryAlgorithms template="Vec3d" topology="@topo" />
+		<MechanicalObject template="Vec3d" topology="@topo" />
+		<TetrahedronFEMForceField template="Vec3d" topology="@topo" />
+		<MeshMatrixMass template="Vec3d,double" topology="@topo" />
+		<FixedConstraint template="Vec3d" topology="@topo" />
+		<Node 	 parents="@/Liver"  >
+			<OglModel template="Vec3d" topology="@/Liver/topo" />
+			<BarycentricMapping template="Vec3d,Vec3d" input="@../MechanicalModel"  output="@VisualModel" />
+		</Node>
+	</Node>
+</Node>
