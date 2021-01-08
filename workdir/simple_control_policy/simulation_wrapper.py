@@ -31,7 +31,7 @@ SofaRuntime.importPlugin('SofaOpenglVisual')
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
-    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=300,
+    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=10,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
                  debug=False, record_episode=False):
         
@@ -239,7 +239,8 @@ class scene_interface:
         self.scene.action(action)
 
         # step the simulator
-        Sofa.Simulation.animate(self.root, self.dt)
+        for i in range(30):
+            Sofa.Simulation.animate(self.root, self.dt)
         
         # get the objservation and calculate the reward
         obs = self.get_observation()
