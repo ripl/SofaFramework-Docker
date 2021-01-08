@@ -1,17 +1,9 @@
 # encoding: utf-8
 # !/usr/bin/python3
 
-import os
 import Sofa
 import SofaRuntime
 import Sofa.Gui
-import numpy as np
-
-
-SofaRuntime.importPlugin('SofaOpenglVisual')
-
-
-
 
 
 class scene_interface:
@@ -20,7 +12,6 @@ class scene_interface:
     def __init__(self, dt=0.01, max_steps=300):
 
         self.dt = dt
-
         # max_steps, how long the simulator should run. Total length: dt*max_steps
         self.max_steps = max_steps
 
@@ -29,8 +20,6 @@ class scene_interface:
         # the current step in the simulation
         self.current_step = 0
 
-        # every time we reset we setup the simulator fresh.
-        SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT') + "lib/python3/site-packages")
 
         # Register all the common component in the factory.
         SofaRuntime.importPlugin('SofaOpenglVisual')
@@ -38,17 +27,20 @@ class scene_interface:
 
         self.root = Sofa.Core.Node("myroot")
 
-        self.place_objects_in_scene(self.root)
-        ### create some objects to observe
 
+        ### create some objects to observe
+        self.place_objects_in_scene(self.root)
+
+        # place light and a camera
         self.root.addObject("LightManager")
         self.root.addObject("SpotLight", position=[0,10,0], direction=[0,-1,0])
         self.root.addObject("InteractiveCamera", name="camera", position=[0,10, 0],
                             lookAt=[0,0,0], distance=37,
                             fieldOfView=45, zNear=0.63, zFar=55.69)
 
+        # start the simulator
         Sofa.Simulation.init(self.root)
-
+        # start the gui
         Sofa.Gui.GUIManager.Init("Recorded_Episode", "qt")
         Sofa.Gui.GUIManager.createGUI(self.root, __file__)
 
@@ -57,7 +49,7 @@ class scene_interface:
         ### these are just some things that stay still and move around
         # so you know the animation is actually happening
         root.gravity = [0, -1., 0]
-        root.addObject("VisualStyle", displayFlags="showWireframe showBehaviorModels")
+        root.addObject("VisualStyle", displayFlags="showWireframe showBehaviorModels showAll")
         root.addObject("MeshGmshLoader", name="meshLoaderCoarse",
                        filename="mesh/liver.msh")
         root.addObject("MeshObjLoader", name="meshLoaderFine",
@@ -67,71 +59,50 @@ class scene_interface:
         root.addObject("CGLinearSolver", iterations="200",
                         tolerance="1e-09", threshold="1e-09")
 
-        def Sphere(rootNode, name, position, color):
-            # Creating the sphere
-            sphere = rootNode.addChild(name)
-            sphere.addObject('MechanicalObject', name="dofs", template="Rigid3", position=position)
 
-            #### Visualization of the sphere
-            sphereVisu = sphere.addChild("VisualModel")
-            sphereVisu.loader = sphereVisu.addObject('MeshObjLoader', name="loader", filename="mesh/ball.obj",
-                                                     scale=0.5)
-            sphereVisu.addObject('OglModel', name="model", src="@loader", color=color)
-            sphereVisu.addObject('RigidMapping')
-            return sphere
+        liver = root.addChild("liver")
 
-        Sphere(root, "sphere", "0 0 1", "0 0.3 1 1")
+        liver.addObject("TetrahedronSetTopologyContainer",
+                        name="topo", src="@../meshLoaderCoarse" )
+        liver.addObject("TetrahedronSetGeometryAlgorithms",
+                        template="Vec3d", name="GeomAlgo")
+        liver.addObject("MechanicalObject",
+                        template="Vec3d",
+                        name="MechanicalModel", showObject="1", showObjectScale="3")
 
-        def liver(root):
+        liver.addObject("TetrahedronFEMForceField", name="fem", youngModulus="1000",
+                        poissonRatio="0.4", method="large")
 
+        liver.addObject("MeshMatrixMass", massDensity="1")
+        liver.addObject("FixedConstraint", indices="2 3 50")
 
-            liver = root.addChild("liver")
-
-            liver.addObject("TetrahedronSetTopologyContainer",
-                            name="topo", src="@../meshLoaderCoarse" )
-            liver.addObject("TetrahedronSetGeometryAlgorithms",
-                            template="Vec3d", name="GeomAlgo")
-            liver.addObject("MechanicalObject",
-                            template="Vec3d",
-                            name="MechanicalModel", showObject="1", showObjectScale="3")
-
-            liver.addObject("TetrahedronFEMForceField", name="fem", youngModulus="1000",
-                            poissonRatio="0.4", method="large")
-
-            liver.addObject("MeshMatrixMass", massDensity="1")
-            liver.addObject("FixedConstraint", indices="2 3 50")
-            #liver.addObject("OglModel", name="VisualModel", src="@../meshLoaderCoarse")
-
-        liver(root)
 
 
 
     def step(self):
+        # step through time
+
+        # this steps the simulation
         Sofa.Simulation.animate(self.root, self.dt)
+
+        # just to keep track of where we are
         self.current_step += 1
-        factor = np.sin(self.current_step / self.max_steps)
-        a = self.root.sphere.dofs.position
-        print(dir(a))
-        print(a)
-        # move the thing we are looking at for something to watch
-        #with a.writeableArray() as wa:
-        #    wa[:] = np.array([0.0, 0.0, self.current_step, self.current_step, 0, 0])
 
+        ### A better example would also show how to read and edit values through scripts
+        # which would likely be useful if you are running without a normal gui
 
+        # return true if done
         return self.current_step >= self.max_steps
 
 
-
+    # save a screenshot from the position of where we set the camera above
     def record_frame(self, filename):
         Sofa.Gui.GUIManager.SaveScreenshot(filename)
 
 
+
 def main():
-
-
-
     a = scene_interface()
-
     done = False
     while not done:
         factor = a.current_step

@@ -328,6 +328,7 @@ RUN sudo apt-get install -y screen
 #RUN cd /builds/blender-git/blender && \
 #    make update && \
 #    make bpy
+# Install vnc, xvfb in order to create a 'fake' display and firefox
 
 
 #ENTRYPOINT ["/docker-entrypoint.sh"]
