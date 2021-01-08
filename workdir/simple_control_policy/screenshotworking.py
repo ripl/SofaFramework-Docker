@@ -23,11 +23,6 @@ def Sphere(rootNode, name, position, color):
     sphereVisu.addObject('RigidMapping')
     return sphere
 
-root.addObject("LightManager")
-root.addObject("SpotLight", position=[0,0,10], direction=[0,0,-1])
-root.addObject("InteractiveCamera", name="camera", position=[0,0,10],
-   lookAt=[0,0,0], distance=37, fieldOfView=45, zNear=0.63, zFar=55.69)
-
 
 Sphere(root, "hi", "0 0 1", "0 0.3 1 1")
 

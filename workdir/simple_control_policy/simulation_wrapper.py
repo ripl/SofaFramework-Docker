@@ -24,13 +24,16 @@ import sceneClass
 #    def onEvent(self, event):
 #            print("Event: "+str(event))
 # root.addObject(MyController())
+SofaRuntime.importPlugin('SofaOpenglVisual')
+
+
 
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
     def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
-                 debug=False):
+                 debug=False, record_episode=True):
         
         # it is 1x1x2 with a cavity in both positions
         
@@ -73,7 +76,10 @@ class scene_interface:
         self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
                                             shape=(3,), dtype=np.float32)
 
+        self.record_episode = record_episode
+
         # start the scene
+
         obs = self.reset()
 
         
@@ -125,17 +131,40 @@ class scene_interface:
         # Register all the common component in the factory.
         SofaRuntime.importPlugin('SofaOpenglVisual')
         SofaRuntime.importPlugin("SofaComponentAll")
+
         self.root = Sofa.Core.Node("myroot")
-        
+
         # create the scene
         self.scene = sceneClass.SceneDefinition(self.root, design=self.design,
                           meshFolder=self.meshFolder, with_gui=True, debug=self.debug)
     
+        # if we want to record the session we need to have a gui
+        if self.record_episode:
+            robot_position = np.array([0, 0, 0])
+            camera_position = np.array([0, 0, 10])
+            position = list(camera_position)
+            direction = robot_position - camera_position
+            direction = list(direction / np.linalg.norm(direction))
+
+            self.root.addObject("LightManager")
+            self.root.addObject("SpotLight", position=position, direction=direction)
+            self.root.addObject("InteractiveCamera", name="camera", position=position,
+                            lookAt=list(robot_position), distance=37,
+                           fieldOfView=45, zNear=0.63, zFar=55.69)
+
+
 
         # This is what starts the environment up (I think) and calling this is 
         # what clears out the old simulation. (Not entirely sure, if this doesn't
         # work, try uncommenting the importlib commands above
         Sofa.Simulation.init(self.root)
+
+        if self.record_episode:
+            Sofa.Gui.GUIManager.Init("Recorded_Episode", "qt")
+            Sofa.Gui.GUIManager.createGUI(self.root, __file__)
+            print("Supported GUIs are " + Sofa.Gui.GUIManager.ListSupportedGUI(","))
+
+
         if self.debug:
             Sofa.Simulation.print(self.root)
         
@@ -216,7 +245,14 @@ class scene_interface:
         
         rwrd = self.reward(obs)
 
+        if self.record_episode:
+            self.record_frame()
+
         return obs, rwrd, done, {}
+
+    def record_frame(self):
+        Sofa.Gui.GUIManager.SaveScreenshot(str(self.current_step)+"test.png")
+
 
         
         
@@ -242,6 +278,8 @@ def main():
         total += reward
         print('reward:', reward, " total reward ", total)
         print('action:', action)
+
+        #print(a.simple_render())
    
  
 
