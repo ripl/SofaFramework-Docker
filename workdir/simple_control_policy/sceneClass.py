@@ -176,7 +176,7 @@ def createScene(rootNode):
                                3*np.sin(3*factor*np.pi*2)]]])
         action = np.array([[[3 * np.sin(factor * np.pi * 2),]]])
 
-        action = action - action + 7
+        action = action - action + 5
         scn.action(action)
         
         print(scn.observation()[0])
