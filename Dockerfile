@@ -330,7 +330,13 @@ RUN sudo apt-get install -y screen
 #    make bpy
 # Install vnc, xvfb in order to create a 'fake' display and firefox
 
-
+RUN  sudo apt-get install -y \
+    software-properties-common \
+    unzip \
+    curl \
+    xvfb
+RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+RUN sudo apt-get install -y x11vnc
 #ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD /bin/bash -c "source ~/.bashrc && cd /pkgs/dl/examples/sofa_start && /bin/bash"
 

@@ -42,6 +42,7 @@ class scene_interface:
         Sofa.Simulation.init(self.root)
         # start the gui
         Sofa.Gui.GUIManager.Init("Recorded_Episode", "qt")
+        print(self.root, __file__)
         Sofa.Gui.GUIManager.createGUI(self.root, __file__)
 
 

@@ -71,7 +71,7 @@ class scene_interface:
         self.metadata = None
         self.spec = None
         self.reward_range = (-100000, 100000)
-        self.action_space = spaces.Box(low=3.0, high=7.0, shape=design.shape,
+        self.action_space = spaces.Box(low=2.0, high=7.0, shape=design.shape,
                                        dtype=np.float32)
         self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
                                             shape=(3,), dtype=np.float32)
@@ -193,8 +193,8 @@ class scene_interface:
         #simplified reward is just the radius of the baloon", sub 2 to take away starting value, 0.25 to set desired point and add a little so it starts at zero again
         goal = 2.137
         #rwd = -1.0*np.power(np.linalg.norm(observation)-2.0000000000000004 - 0.20, 2) + np.power(0.20,2)
-        rwd = - np.abs(np.linalg.norm(observation) - goal) + 0.03
-        self.debug_output("observation: "+repr(observation) +"\nreward: "+repr(rwd))
+        rwd = - np.abs(np.linalg.norm(observation) - goal) + 2.137 - 2.045
+        self.debug_output("observation: "+repr(np.linalg.norm(observation))  +"\nreward: "+repr(rwd))
 
         return rwd
         
@@ -203,7 +203,9 @@ class scene_interface:
         observation = self.scene.observation()
         observation = observation[82] 
         observation = observation.flatten()
-        #print(observation)
+        
+        print(np.linalg.norm(observation))
+        #exit()
         #observation = self.scene.observation().flatten()
         if np.isnan(np.sum(observation)):
             self.debug_output("found nan in observation "+str(time.time()),
@@ -266,16 +268,20 @@ def main():
     #design = np.array([[[0, 0]]])
     design = np.array([[[ 0]]])
 
-    a = scene_interface(0, design=design, dt = 0.001, max_steps=300,
+    a = scene_interface(0, design=design, dt = 0.001, max_steps=20,
                  meshFolder=meshpath)
     
     done = False
     
     total = 0
+    action = 3.0
+    
     while not done:
+        #print(a.record_episode)
         factor = a.current_step / a.max_steps
-        action = 5*np.cos(factor*np.pi*2)*np.ones(design.shape)
-        action = action*0 + 6.5
+        act = 5*np.cos(factor*np.pi*2)*np.ones(design.shape)
+        action =act*0+ action + 0.2
+        action = action*0
         obs2, reward, done, info  = a.step(action)
         total += reward
         print('reward:', reward, " total reward ", total)
