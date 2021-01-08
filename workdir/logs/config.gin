@@ -1,0 +1,94 @@
+import dl.examples.sofa_start
+
+# Parameters for pi/Adam:
+# ==============================================================================
+pi/Adam.amsgrad = False
+pi/Adam.betas = (0.9, 0.999)
+pi/Adam.eps = 1e-05
+pi/Adam.lr = 5e-05
+pi/Adam.weight_decay = 0
+
+# Parameters for vf/Adam:
+# ==============================================================================
+vf/Adam.amsgrad = False
+vf/Adam.betas = (0.9, 0.999)
+vf/Adam.eps = 1e-05
+vf/Adam.lr = 0.0001
+vf/Adam.weight_decay = 0
+
+# Parameters for Checkpointer:
+# ==============================================================================
+Checkpointer.ckpt_period = 1000
+Checkpointer.format = '{:09d}'
+
+# Parameters for DiagGaussian:
+# ==============================================================================
+DiagGaussian.constant_log_std = True
+DiagGaussian.log_std_max = 2
+DiagGaussian.log_std_min = -20
+
+# Parameters for Policy:
+# ==============================================================================
+# None.
+
+# Parameters for PPO2:
+# ==============================================================================
+PPO2.alpha = 1.5
+PPO2.batch_size = 512
+PPO2.ent_coef = 0.01
+PPO2.env_fn = @sofa_make_env
+PPO2.epochs_pi = 10
+PPO2.epochs_vf = 10
+PPO2.eval_num_episodes = 100
+PPO2.gamma = 0.99
+PPO2.gpu = True
+PPO2.kl_target = 0.01
+PPO2.lambda_ = 0.95
+PPO2.max_grad_norm = 5.0
+PPO2.nenv = 64
+PPO2.norm_advantages = True
+PPO2.opt_pi = @pi/optim.Adam
+PPO2.opt_vf = @vf/optim.Adam
+PPO2.policy_fn = @sofa_continuous_policy_fn
+PPO2.record_num_episodes = 0
+PPO2.rollout_length = 128
+PPO2.value_fn = @sofa_value_fn
+
+# Parameters for sofa_continuous_policy_fn:
+# ==============================================================================
+# None.
+
+# Parameters for sofa_make_env:
+# ==============================================================================
+sofa_make_env.env_id = 'SofaThing-v0'
+sofa_make_env.norm_actions = True
+sofa_make_env.norm_observations = True
+sofa_make_env.seed = 0
+
+# Parameters for sofa_value_fn:
+# ==============================================================================
+# None.
+
+# Parameters for train:
+# ==============================================================================
+train.algorithm = @PPO2
+train.eval = True
+train.eval_period = 1000000
+train.hardware_poll_period = 1
+train.maxseconds = None
+train.maxt = 10000000
+train.save_period = 1000
+train.seed = 0
+
+# Parameters for ValueFunction:
+# ==============================================================================
+# None.
+
+# Parameters for VecObsNormWrapper:
+# ==============================================================================
+VecObsNormWrapper.eps = 0.01
+VecObsNormWrapper.log = True
+VecObsNormWrapper.log_prob = 0.01
+VecObsNormWrapper.mean = None
+VecObsNormWrapper.std = None
+VecObsNormWrapper.steps = 5000

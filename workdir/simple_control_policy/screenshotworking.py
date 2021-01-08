@@ -54,12 +54,19 @@ class scene_interface:
 
 
     def place_objects_in_scene(self, root):
-        #root.addObject("MechanicalObject", name="dofs", template="Rigid3",
-        #               position=[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]],
-        #               showObject=True, showObjectScale=1)
-        #
-        #root.addObject("MeshObjLoader", name="loader", filename="mesh/Armadillo_simplified.obj", scale3d="0.1 0.1 0.1")
-        # root.addObject("OglModel", name="visual", src="@loader", color="1 0 0 0.2")
+        ### these are just some things that stay still and move around
+        # so you know the animation is actually happening
+        root.gravity = [0, -1., 0]
+        root.addObject("VisualStyle", displayFlags="showWireframe showBehaviorModels")
+        root.addObject("MeshGmshLoader", name="meshLoaderCoarse",
+                       filename="mesh/liver.msh")
+        root.addObject("MeshObjLoader", name="meshLoaderFine",
+                       filename="mesh/liver-smooth.obj")
+
+        root.addObject("EulerImplicitSolver")
+        root.addObject("CGLinearSolver", iterations="200",
+                        tolerance="1e-09", threshold="1e-09")
+
         def Sphere(rootNode, name, position, color):
             # Creating the sphere
             sphere = rootNode.addChild(name)
@@ -76,17 +83,10 @@ class scene_interface:
         Sphere(root, "sphere", "0 0 1", "0 0.3 1 1")
 
         def liver(root):
-            root.gravity = [0, -1., 0]
-            root.addObject("VisualStyle", displayFlags="showWireframe showBehaviorModels")
-            root.addObject("MeshGmshLoader", name="meshLoaderCoarse",
-                           filename="mesh/liver.msh")
-            root.addObject("MeshObjLoader", name="meshLoaderFine",
-                           filename="mesh/liver-smooth.obj")
+
 
             liver = root.addChild("liver")
-            liver.addObject("EulerImplicitSolver")
-            liver.addObject("CGLinearSolver", iterations="200",
-                            tolerance="1e-09", threshold="1e-09")
+
             liver.addObject("TetrahedronSetTopologyContainer",
                             name="topo", src="@../meshLoaderCoarse" )
             liver.addObject("TetrahedronSetGeometryAlgorithms",
@@ -100,13 +100,7 @@ class scene_interface:
 
             liver.addObject("MeshMatrixMass", massDensity="1")
             liver.addObject("FixedConstraint", indices="2 3 50")
-            liver.addObject("OglModel", name="VisualModel", src="@../meshLoaderCoarse")
-            #visual = liver.addChild("visual")
-            #visual.addObject("VisualModel", src="@../../meshLoaderFine")
-            #visual.addObject("BarycentricMapping",
-            #                name="VMapping" ,
-            #                 input="@../MechanicalModel",
-            #                 output="@VisualModel")
+            #liver.addObject("OglModel", name="VisualModel", src="@../meshLoaderCoarse")
 
         liver(root)
 
@@ -116,9 +110,9 @@ class scene_interface:
         Sofa.Simulation.animate(self.root, self.dt)
         self.current_step += 1
         factor = np.sin(self.current_step / self.max_steps)
-        a = self.root.liver
-        #print(dir(a))
-        #print(a)
+        a = self.root.sphere.dofs.position
+        print(dir(a))
+        print(a)
         # move the thing we are looking at for something to watch
         #with a.writeableArray() as wa:
         #    wa[:] = np.array([0.0, 0.0, self.current_step, self.current_step, 0, 0])
