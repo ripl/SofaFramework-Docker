@@ -9,18 +9,6 @@
 FROM nvidia/cudagl:10.1-devel-ubuntu18.04
 
 RUN apt-get update --fix-missing && apt-get upgrade -y
-## need gcc-9 for blender
-RUN apt-get update -y && \
- apt-get upgrade -y && \
- apt-get dist-upgrade -y && \
- apt-get install build-essential software-properties-common -y && \
- add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
- apt-get update -y
-
-RUN  apt-get install gcc-7 g++-7 gcc-9 g++-9 -y && \
- update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
-
-RUN update-alternatives --config gcc
 
 
 
@@ -40,24 +28,11 @@ WORKDIR /home/sofauser
 ENV HOME="/home/sofauser"
 
 
-#BLENDER install
-RUN sudo apt-get install -y build-essential git subversion cmake libx11-dev libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
-
-RUN sudo mkdir /builds &&  sudo mkdir /builds/blender-git && sudo chown -R sofauser:sofauser /builds 
-RUN cd /builds/blender-git && \
-    git clone https://git.blender.org/blender.git
-RUN mkdir /builds/blender-git/lib && \
-    cd /builds/blender-git/lib && \
-    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64
-
-
-RUN cd /builds/blender-git/blender && make update -j 8
-RUN cd /builds/blender-git/blender && make bpy -j 8
-
 
 
 
 # Install packages
+RUN sudo apt-get --fix-missing  update
 RUN sudo apt-get install -y wget git vim libsm6 libxext6 libxrender-dev ffmpeg python-opengl
 
 # install anaconda
@@ -91,6 +66,44 @@ ENV PYTHONPATH /pkgs:$PYTHONPATH
 
 ###############################################################################
 # End reinforcment learning dependencies (from cbschaff/dl on github)
+###############################################################################
+### BLENDER install -- used for manipulating robot meshes
+###############################################################################
+
+## need gcc-9 for blender
+RUN sudo apt-get update -y && \
+ sudo apt-get upgrade -y && \
+ sudo apt-get dist-upgrade -y && \
+ sudo apt-get install build-essential software-properties-common -y && \
+ sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+ sudo apt-get update -y
+
+RUN  sudo apt-get install gcc-7 g++-7 gcc-9 g++-9 -y && \
+ update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+
+RUN update-alternatives --config gcc
+
+
+# Download dependencies and packages
+RUN sudo apt-get install -y build-essential git subversion cmake libx11-dev \
+    libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
+RUN sudo mkdir /builds &&  sudo mkdir /builds/blender-git && sudo chown -R sofauser:sofauser /builds
+RUN cd /builds/blender-git && \
+    git clone https://git.blender.org/blender.git
+RUN mkdir /builds/blender-git/lib && \
+    cd /builds/blender-git/lib && \
+    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64
+
+# compile bpy
+RUN cd /builds/blender-git/blender && make update -j 8
+RUN cd /builds/blender-git/blender && make bpy -j 8
+
+# mesh manipulating packages for python
+RUN python -m pip install  gmsh pygmsh meshio
+
+
+###############################################################################
+#### End Blender install
 ###############################################################################
 # Begin Setting up Sofa-Framework Build Environment
 # adapted from sofaframework/sofabuilder_ubuntu on Dockerhub
@@ -347,19 +360,19 @@ RUN sudo echo 'export PYTHONPATH=/builds/blender-git/lib/linux_centos7_x86_64/py
 
 
 # Python2 kernel for jupyter notebook
-RUN python -m ipykernel install --user
-RUN sudo apt-get install -y screen
+# RUN python -m ipykernel install --user
+# RUN sudo apt-get install -y screen
 
-RUN  sudo apt-get install -y \
-    software-properties-common \
-    unzip \
-    curl \
-    xvfb
-RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
-RUN sudo apt-get install -y x11vnc
 
-## mesh editting deps
-RUN python -m pip install  gmsh pygmsh meshio
+### Dummy Screen for headless QT TODO: Get this to actually work
+# RUN  sudo apt-get install -y \
+#    software-properties-common \
+#    unzip \
+#    curl \
+#    xvfb
+# RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+# RUN sudo apt-get install -y x11vnc
+
 
 # Install vnc, xvfb in order to create a 'fake' display and firefox
 
