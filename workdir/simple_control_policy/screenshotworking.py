@@ -4,12 +4,12 @@
 import Sofa
 import SofaRuntime
 import Sofa.Gui
-
+import numpy as np
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
 
-    def __init__(self, dt=0.01, max_steps=300):
+    def __init__(self, dt=0.01, max_steps=30):
 
         self.dt = dt
         # max_steps, how long the simulator should run. Total length: dt*max_steps
@@ -27,6 +27,8 @@ class scene_interface:
 
         self.root = Sofa.Core.Node("myroot")
 
+        #confignode = self.root.addChild("Config")
+        #confignode.addObject('RequiredPlugin', name="SofaPython3", printLog=False)
 
         ### create some objects to observe
         self.place_objects_in_scene(self.root)
@@ -34,7 +36,7 @@ class scene_interface:
         # place light and a camera
         self.root.addObject("LightManager")
         self.root.addObject("SpotLight", position=[0,10,0], direction=[0,-1,0])
-        self.root.addObject("InteractiveCamera", name="camera", position=[0,10, 0],
+        self.root.addObject("InteractiveCamera", name="camera", position=[0,10,0],
                             lookAt=[0,0,0], distance=37,
                             fieldOfView=45, zNear=0.63, zFar=55.69)
 
@@ -45,42 +47,37 @@ class scene_interface:
         print(self.root, __file__)
         Sofa.Gui.GUIManager.createGUI(self.root, __file__)
 
+        # if you want to launch the qt gui use this,
+        # Sofa.Gui.GUIManager.MainLoop(self.root)
+        # but you can't use
+        # Sofa.Simulation.animate in this case
+
 
     def place_objects_in_scene(self, root):
         ### these are just some things that stay still and move around
         # so you know the animation is actually happening
-        root.gravity = [0, -1., 0]
-        root.addObject("VisualStyle", displayFlags="showWireframe showBehaviorModels showAll")
-        root.addObject("MeshGmshLoader", name="meshLoaderCoarse",
-                       filename="mesh/liver.msh")
-        root.addObject("MeshObjLoader", name="meshLoaderFine",
-                       filename="mesh/liver-smooth.obj")
 
-        root.addObject("EulerImplicitSolver")
-        root.addObject("CGLinearSolver", iterations="200",
-                        tolerance="1e-09", threshold="1e-09")
+        root.gravity = [0, -1, 0]
 
+        # To get your scene to display correctly you will need to set the displayFlags how you want them
+        root.addObject("VisualStyle", displayFlags="showAll")
 
-        liver = root.addChild("liver")
+        def Sphere(rootNode, name, position, color):
+            # Creating the sphere
+            sphere = rootNode.addChild(name)
+            sphere.addObject('MechanicalObject', name="mstate", template="Rigid3", position=position)
 
-        liver.addObject("TetrahedronSetTopologyContainer",
-                        name="topo", src="@../meshLoaderCoarse" )
-        liver.addObject("TetrahedronSetGeometryAlgorithms",
-                        template="Vec3d", name="GeomAlgo")
-        liver.addObject("MechanicalObject",
-                        template="Vec3d",
-                        name="MechanicalModel", showObject="1", showObjectScale="3")
+            #### Visualization of the sphere
+            sphereVisu = sphere.addChild("VisualModel")
+            sphereVisu.loader = sphereVisu.addObject('MeshObjLoader', name="loader", filename="mesh/ball.obj",
+                                                     scale=0.5)
+            sphereVisu.addObject('OglModel', name="model", src="@loader", color=color)
+            sphereVisu.addObject('RigidMapping')
+            return sphere
 
-        liver.addObject("TetrahedronFEMForceField", name="fem", youngModulus="1000",
-                        poissonRatio="0.4", method="large")
+        Sphere(self.root, "sphere",[-1,0,0,0,0,0,1],[10.0,0.0,0.9])
 
-        liver.addObject("MeshMatrixMass", massDensity="1")
-        liver.addObject("FixedConstraint", indices="2 3 50")
-
-
-
-
-    def step(self):
+    def step(self, action):
         # step through time
 
         # this steps the simulation
@@ -89,8 +86,12 @@ class scene_interface:
         # just to keep track of where we are
         self.current_step += 1
 
-        ### A better example would also show how to read and edit values through scripts
-        # which would likely be useful if you are running without a normal gui
+
+        with self.root.sphere.mstate.position.writeable() as position:
+            # set position so the sphere goes around in a circle
+            print(position)
+            position[0][0] = np.cos(action)*1.0
+
 
         # return true if done
         return self.current_step >= self.max_steps
@@ -106,9 +107,9 @@ def main():
     a = scene_interface()
     done = False
     while not done:
-        factor = a.current_step
-        done = a.step()
-        a.record_frame(str(factor) + ".png")
+        action = np.pi*2*a.current_step / a.max_steps
+        done = a.step(action)
+        a.record_frame(str(a.current_step) + ".png")
 
 
 if __name__ == '__main__':
