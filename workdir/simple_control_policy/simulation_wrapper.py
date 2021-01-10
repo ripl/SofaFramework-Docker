@@ -204,7 +204,7 @@ class scene_interface:
         observation = observation[82] 
         observation = observation.flatten()
         
-        print(np.linalg.norm(observation))
+        #print(np.linalg.norm(observation))
         #exit()
         #observation = self.scene.observation().flatten()
         if np.isnan(np.sum(observation)):
