@@ -1,0 +1,1 @@
+/builds/src/applications/plugins/SofaCUDA/examples

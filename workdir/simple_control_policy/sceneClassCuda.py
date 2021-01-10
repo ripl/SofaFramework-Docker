@@ -45,7 +45,7 @@ class SceneDefinition:
         Scene(self.rootNode, gravity=[0, 0.0, 0], dt=dt)
 
         required_plugins = ['SofaTopologyMapping', 'SofaOpenglVisual', 'SofaSparseSolver', 'SofaConstraint',
-                            'SofaGeneralLoader', 'SoftRobots']
+                            'SofaGeneralLoader', 'SoftRobots', ""]
         for i in required_plugins:
             self.rootNode.addObject("RequiredPlugin", name='req_p' + i, pluginName=i)
 
@@ -95,14 +95,14 @@ class SceneDefinition:
         
         # specify solid mechanics
         self.volume.addObject('TetrahedronSetTopologyContainer', src="@loader", name="container")
-        self.volume.addObject('MechanicalObject', template='Vec3d', name='dofs')
+        self.volume.addObject('MechanicalObject', template='CudaVec3f', name='dofs')
         self.volume.addObject('UniformMass', totalMass=self.totalMass, name='mass')
         # if we wanted to do a Neo-Hookean Solid we would do that at this line.
-        self.volume.addObject('TetrahedronFEMForceField', template='Vec3d', method='large', name='forcefield',
+        self.volume.addObject('TetrahedronFEMForceField', template='CudaVec3f', method='large', name='forcefield',
                                  poissonRatio=self.poissonRatio, youngModulus=self.youngModulus)
         # Constraint solver for corrections, this is how forces between the
         # pressurized cavities are applied to the solid
-        self.volume.addObject('LinearSolverConstraintCorrection', template='Vec3d', solverName='../solver')
+        self.volume.addObject('LinearSolverConstraintCorrection', template='CudaVec3f', solverName='../solver')
         
         # add the cavities
         for ijk in np.ndindex(self.design.shape):
@@ -121,7 +121,7 @@ class SceneDefinition:
                 # this pressure constraint is how the cavity is actually controlled
                 cavity.addObject('SurfacePressureConstraint',
                                  name="SurfacePressureConstraint",
-                                 template='Vec3d', value="0.0001",
+                                 template='CudaVec3f', value="0.0001",
                                  triangles='@topo.triangles', drawPressure='0',
                                  drawScale='0.0002', valueType="pressure")
                 cavity.addObject('BarycentricMapping', name='mapping',
@@ -137,10 +137,10 @@ class SceneDefinition:
             robotVisu.addObject('TriangleSetTopologyContainer', name='container')
             robotVisu.addObject('TriangleSetTopologyModifier')
     
-            robotVisu.addObject('TriangleSetGeometryAlgorithms', template='Vec3d')
+            robotVisu.addObject('TriangleSetGeometryAlgorithms', template='CudaVec3f')
             robotVisu.addObject('Tetra2TriangleTopologicalMapping', name='Mapping', input="@../container",
                                 output="@container")
-            robotVisu.addObject('OglModel', template='Vec3d', color='0.3 0.2 0.2 0.6', translation=self.translation)
+            robotVisu.addObject('OglModel', template='CudaVec3f', color='0.3 0.2 0.2 0.6', translation=self.translation)
             robotVisu.addObject('IdentityMapping')
             self.rootNode.addObject('BackgroundSetting', color='0 0.168627 0.211765')
 
