@@ -79,14 +79,15 @@ RUN sudo apt-get update -y && \
  sudo apt-get update -y
 
 RUN  sudo apt-get install gcc-7 g++-7 gcc-9 g++-9 -y && \
- update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
 
 RUN update-alternatives --config gcc
 
 
 # Download dependencies and packages
 RUN sudo apt-get install -y build-essential git subversion cmake libx11-dev \
-    libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev
+    libxxf86vm-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libglew-dev \
+    libxft2 libxft2:i386 lib32ncurses5 libxext6 libxext6:i386
 RUN sudo mkdir /builds &&  sudo mkdir /builds/blender-git && sudo chown -R sofauser:sofauser /builds
 RUN cd /builds/blender-git && \
     git clone https://git.blender.org/blender.git
