@@ -34,7 +34,7 @@ Instructions for x-docker can be found at: https://github.com/afdaniele/x-docker
 
 Note: currently the runSofa gui that uses OpenGL doesn't work when the host machine has an nvidia GPU due (I believe) to driver issues.
 
-To run with dl: 
+# To run with dl: 
 you need to launch it with ./rllaunch.sh and also have https://github.com/amackeith/dl in the same directory as SofaFramework-Docker (or adjust the path in rllaunch.sh)
 
 Then running with ./train_continous.sh should work. 
