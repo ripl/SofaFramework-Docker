@@ -162,8 +162,8 @@ ENV VM_HAS_BULLET="disabled"
 ENV VM_HAS_OPENCASCADE="true"
 
 # Install CMake
-ADD https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0-Linux-x86_64.sh /tmp
-## ADD cmake-3.12.0-Linux-x86_64.sh /tmp
+## ADD https://github.com/Kitware/CMake/releases/download/v3.12.0/cmake-3.12.0-Linux-x86_64.sh /tmp
+ADD cmake-3.12.0-Linux-x86_64.sh /tmp
 RUN sudo chmod a+x /tmp/cmake-3.12.0-Linux-x86_64.sh
 RUN sudo bash /tmp/cmake-3.12.0-Linux-x86_64.sh --skip-license --prefix=/usr/local
 
@@ -173,8 +173,8 @@ RUN sudo add-apt-repository -y ppa:beineri/opt-qt-5.12.6-bionic \
     && sudo apt-get update \
     && sudo apt-get install -y qt512-meta-full qt512charts-no-lgpl
 
-ADD https://www.sofa-framework.org/wp-content/uploads/2020/06/QtInstallerFramework_3.0_Linux.zip /tmp
-## ADD QtInstallerFramework_3.0_Linux.zip /tmp
+## ADD https://www.sofa-framework.org/wp-content/uploads/2020/06/QtInstallerFramework_3.0_Linux.zip /tmp
+ADD QtInstallerFramework_3.0_Linux.zip /tmp
 RUN sudo unzip /tmp/QtInstallerFramework_3.0_Linux.zip -d /builds && sudo chmod -R a+x /builds/Qt
 ENV QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"
 ENV PATH="${QTIFWDIR}/bin:${PATH}"
@@ -186,8 +186,8 @@ RUN sudo add-apt-repository -y ppa:mhier/libboost-latest \
 
 # Install CGAL
 # Due to dependencies on Boost and Qt, we have to build CGAL
-ADD https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.14.3/CGAL-4.14.3.tar.xz /tmp
-## COPY CGAL-4.14.3.tar.xz /tmp
+## ADD https://github.com/CGAL/cgal/releases/download/releases/CGAL-4.14.3/CGAL-4.14.3.tar.xz /tmp
+COPY CGAL-4.14.3.tar.xz /tmp
 RUN sudo chown sofauser:sofauser /tmp/CGAL-4.14.3.tar.xz
 RUN sudo apt-get install -y libgmp-dev libmpfr-dev
 #ENV LD_LIBRARY_PATH="/home/sofauser/anaconda3/lib:${LD_LIBRARY_PATH}"
