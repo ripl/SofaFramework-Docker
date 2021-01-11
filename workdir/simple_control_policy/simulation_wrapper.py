@@ -31,7 +31,7 @@ SofaRuntime.importPlugin('SofaOpenglVisual')
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
-    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=10,
+    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
                  debug=False, record_episode=False):
         
@@ -71,7 +71,7 @@ class scene_interface:
         self.metadata = None
         self.spec = None
         self.reward_range = (-100000, 100000)
-        self.action_space = spaces.Box(low=2.0, high=7.0, shape=design.shape,
+        self.action_space = spaces.Box(low=0.0, high=7.0, shape=design.shape,
                                        dtype=np.float32)
         self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
                                             shape=(3,), dtype=np.float32)
@@ -176,24 +176,10 @@ class scene_interface:
         
     def reward(self, observation):
         """Returns reward given an observation"""
-        # for the time being this is just measuring if the robot can stretch to
-        # 1.25 of its original length with dense reward.
-        '''
-        max_val = np.max(observation)
-        min_val = np.min(observation)
-        
-        self.debug_output(" max val "+str(max_val)
-                              +" min val "+str(min_val))
-        
-        rwd = -np.power( np.abs(max_val-min_val)-0.25, 2)+0.0025
-
-        #if rwd < self.reward_range[0]:
-        #    rwd = self.reward_range[0]
-        '''
         #simplified reward is just the radius of the baloon", sub 2 to take away starting value, 0.25 to set desired point and add a little so it starts at zero again
         goal = 2.137
-        #rwd = -1.0*np.power(np.linalg.norm(observation)-2.0000000000000004 - 0.20, 2) + np.power(0.20,2)
-        rwd = - np.abs(np.linalg.norm(observation) - goal) + 2.137 - 2.045
+        offset = goal - 2.000 # this is meant to make the original obervations close to zero reward
+        rwd = - np.abs(np.linalg.norm(observation) - goal) + offset
         self.debug_output("observation: "+repr(np.linalg.norm(observation))  +"\nreward: "+repr(rwd))
 
         return rwd
@@ -201,12 +187,12 @@ class scene_interface:
     def get_observation(self):
         
         observation = self.scene.observation()
-        observation = observation[82] 
+        observation = observation[82]  # this selects a single vertex to oberseve
+        # it starts at ~(0, 0, 2) so it is free to move upwards
+        # all the vertexes close to the xy plane are fixed, so this one is ideal for measuring expansion
+        # (they are fixed so it doesn't drift off)
         observation = observation.flatten()
-        
-        #print(np.linalg.norm(observation))
-        #exit()
-        #observation = self.scene.observation().flatten()
+
         if np.isnan(np.sum(observation)):
             self.debug_output("found nan in observation "+str(time.time()),
                               filename="/home/sofauser/workdir/debug_nan.txt")
@@ -241,8 +227,7 @@ class scene_interface:
         self.scene.action(action)
 
         # step the simulator
-        for i in range(30):
-            Sofa.Simulation.animate(self.root, self.dt)
+        Sofa.Simulation.animate(self.root, self.dt)
         
         # get the objservation and calculate the reward
         obs = self.get_observation()
