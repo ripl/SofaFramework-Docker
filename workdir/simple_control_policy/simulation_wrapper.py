@@ -30,7 +30,7 @@ SofaRuntime.importPlugin('SofaOpenglVisual')
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
-    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=30,
+    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
                  debug=False, record_episode=False, steps_per_action=10):
         
@@ -110,8 +110,6 @@ class scene_interface:
 
     def reset(self):
         """Reset the simulation, return the initial observation"""
-        self.root = None
-        self.scene = None
         self.sim_time = 0.0
         self.current_step = 0
         self.debug_line_numb = 0
@@ -126,12 +124,17 @@ class scene_interface:
         #importlib.reload(Sofa.Gui)
         #importlib.reload(sceneClass)
 
+        # self.root can't be set to None or we loose the context (this may need to change if
+        # /when we move to changing designs
+
+
 
         # every time we reset we setup the simulator fresh.
-        SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT') + "lib/python3/site-packages")
+        if not self.started:
+            SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT') + "lib/python3/site-packages")
         
 
-        # If needed this will print the scene graph
+        # If needed this will print the repositories
         if self.debug:
             SofaRuntime.PluginRepository.print()
 
@@ -140,48 +143,54 @@ class scene_interface:
             SofaRuntime.importPlugin('SofaOpenglVisual')
             SofaRuntime.importPlugin("SofaComponentAll")
 
-        self.root = Sofa.Core.Node("myroot")
+        if not self.started:
+            self.root = Sofa.Core.Node("myroot")
+
+            # create the scene
+            self.scene = sceneClass.SceneDefinition(self.root, design=self.design, dt=self.dt,
+                              meshFolder=self.meshFolder,
+                              with_gui=self.record_episode, debug=self.debug)
+
+            # if we want to record the session we need to have a gui
+            if self.record_episode:
+                robot_position = np.array([0, 0, 0])
+                camera_position = np.array([0, 0, 10])
+                position = list(camera_position)
+                direction = robot_position - camera_position
+                direction = list(direction / np.linalg.norm(direction))
+
+                self.root.addObject("LightManager")
+                self.root.addObject("SpotLight", position=position, direction=direction)
+                self.root.addObject("InteractiveCamera", name="camera", position=position,
+                                lookAt=list(robot_position), distance=37,
+                               fieldOfView=45, zNear=0.63, zFar=55.69)
 
 
-        # create the scene
 
-        self.scene = sceneClass.SceneDefinition(self.root, design=self.design, dt=self.dt,
-                          meshFolder=self.meshFolder, with_gui=True, debug=self.debug)
+            # This is what starts the environment up (I think) and calling this is
+            # what clears out the old simulation. (Not entirely sure, if this doesn't
+            # work, try uncommenting the importlib commands above
 
-        # if we want to record the session we need to have a gui
-        if self.record_episode:
-            robot_position = np.array([0, 0, 0])
-            camera_position = np.array([0, 0, 10])
-            position = list(camera_position)
-            direction = robot_position - camera_position
-            direction = list(direction / np.linalg.norm(direction))
-
-            self.root.addObject("LightManager")
-            self.root.addObject("SpotLight", position=position, direction=direction)
-            self.root.addObject("InteractiveCamera", name="camera", position=position,
-                            lookAt=list(robot_position), distance=37,
-                           fieldOfView=45, zNear=0.63, zFar=55.69)
+            Sofa.Simulation.init(self.root)
 
 
 
-        # This is what starts the environment up (I think) and calling this is 
-        # what clears out the old simulation. (Not entirely sure, if this doesn't
-        # work, try uncommenting the importlib commands above
-
-        Sofa.Simulation.init(self.root)
+        if self.started:
+            Sofa.Simulation.reset(self.root)
 
         if self.record_episode:
             Sofa.Gui.GUIManager.Init("Recorded_Episode", "qt")
             Sofa.Gui.GUIManager.createGUI(self.root, __file__)
+            Sofa.Gui.GUIManager.SetDimension(1080, 1080)
+            #Sofa.Gui.GUIManager.MainLoop(self.root)
             print("Supported GUIs are " + Sofa.Gui.GUIManager.ListSupportedGUI(","))
-
 
         if self.debug:
             Sofa.Simulation.print(self.root)
         
         self.started = True
         first_obs = self.get_observation()
-        print("First obs: ", first_obs)
+        self.debug_output("First obs: "+ str(first_obs))
         return first_obs
     
     def close(self):
@@ -264,6 +273,8 @@ class scene_interface:
         prefix = ""
         if other_info is not None:
             prefix = str(other_info) + "_"
+
+        Sofa.Simulation.updateVisual(self.root)
         Sofa.Gui.GUIManager.SaveScreenshot(prefix + str(self.current_step)+"test.png")
 
 
@@ -273,11 +284,11 @@ class scene_interface:
 def sim_run(a,design, i):
     done = False
     total = 0
-
+    x = np.linspace(0,7, 105)
     while not done:
         factor = a.current_step / a.max_steps
         act = 5 * np.cos(factor * np.pi * 2) * np.ones(design.shape)
-        action = act * 0 + 5.5 + i * 0.01
+        action = act * 0  + x[-i]
         obs2, reward, done, info = a.step(action, other_info="Sim" + str(i))
         total += reward
         print('previous action:', action, 'observation: ', a.observation,
@@ -293,9 +304,10 @@ def main():
     design = np.array([[[ 0]]])
 
     a = scene_interface(0, design=design, dt=0.001, max_steps=3,
-                        meshFolder=meshpath, steps_per_action=3, record_episode=False)
+                        meshFolder=meshpath, steps_per_action=3, record_episode=True,
+                        debug=False)
 
-    for i in range(30):
+    for i in range(100):
         sim_run(a, design, i)
 
 if __name__ == '__main__':
