@@ -267,7 +267,7 @@ RUN python -m pip install pybind11 && python -m pip install "pybind11[global]"
 RUN conda remove --force pyqt qt qtawesome qtconsole qtpy
 
 # Make a build directory to work in
-RUN sudo chown -R sofauser:sofauser /builds
+#RUN sudo chown -R sofauser:sofauser /builds
 
 RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/plugins
 
