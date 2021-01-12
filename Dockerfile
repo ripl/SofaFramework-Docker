@@ -372,6 +372,8 @@ RUN  sudo apt-get install -y \
 RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
 RUN sudo apt-get install -y x11vnc
 
+## memory profiler
+RUN pip install -U memory_profiler
 
 # Install vnc, xvfb in order to create a 'fake' display and firefox
 
