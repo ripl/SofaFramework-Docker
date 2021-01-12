@@ -31,12 +31,12 @@ SofaRuntime.importPlugin('SofaOpenglVisual')
 
 class scene_interface:
     """Scene_interface provides step and reset methods"""
-    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.01, max_steps=300,
+    def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=30,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
-                 debug=False, record_episode=False):
+                 debug=False, record_episode=False, steps_per_action=10):
         
         # it is 1x1x2 with a cavity in both positions
-        
+
         # For now: Design is a 3 dim array that specifies if it is cavity or material
         # at each discrete cube in the lattice that makes up the robot
         self.design = design
@@ -51,7 +51,10 @@ class scene_interface:
         # volume.msh, and each cavity if it exists is called cavity_{i}_{j}_{k}.stl
         # where that would be a format string and i,j,k are the idicies in the latus
         self.meshFolder = meshFolder
-        
+
+        # how many sim steps to hold the same action
+        self.steps_per_action = steps_per_action
+
         # root node in the simulator
         self.root = None
         # the scene object
@@ -65,6 +68,8 @@ class scene_interface:
         self.debug_line_numb = 0
         self.reset_count = 0
         self.msg = ""
+        self.observation = None
+        self._cumulative_reward = 0
 
         # things requried by DL
         self.env_id = env_id
@@ -113,7 +118,8 @@ class scene_interface:
         self.reset_count += 1
         self.debug_line_numb = 0
         self.msg = ""
-        
+        self.observation = None
+        self._cumulative_reward = 0
         #importlib.reload(os)
         #importlib.reload(Sofa)
         #importlib.reload(SofaRuntime)
@@ -123,11 +129,11 @@ class scene_interface:
         # every time we reset we setup the simulator fresh.
         SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT') + "lib/python3/site-packages")
         
-        
+
         # If needed this will print the scene graph
         if self.debug:
             SofaRuntime.PluginRepository.print()
-        
+
         # Register all the common component in the factory.
         SofaRuntime.importPlugin('SofaOpenglVisual')
         SofaRuntime.importPlugin("SofaComponentAll")
@@ -135,7 +141,7 @@ class scene_interface:
         self.root = Sofa.Core.Node("myroot")
 
         # create the scene
-        self.scene = sceneClass.SceneDefinition(self.root, design=self.design,
+        self.scene = sceneClass.SceneDefinition(self.root, design=self.design, dt=self.dt,
                           meshFolder=self.meshFolder, with_gui=True, debug=self.debug)
     
         # if we want to record the session we need to have a gui
@@ -199,6 +205,7 @@ class scene_interface:
         np.clip(observation, self.observation_space.low,
                 self.observation_space.high, out=observation)
         
+        self.observation = observation 
         return observation
     
     def step(self, action):
@@ -215,27 +222,35 @@ class scene_interface:
         np.clip(action, self.action_space.low, self.action_space.high, out=action)
         
         self.debug_output("action: " + repr(action))
+
+        # get the objservation and calculate the reward
+        obs = None
+        rwrd = 0
+        for i in range(self.steps_per_action):
+            # apply the action
+            self.scene.action(action)
+            # step the simulator
+            Sofa.Simulation.animate(self.root, self.dt)
+            if self.record_episode:
+                self.record_frame()
+
+            # step the clock
+            self.current_step += 1
+            obs = self.get_observation()
+            rwrd += self.reward(obs)
         
 
 
-        # step the clock
-        self.current_step += 1
-        self.sim_time += self.dt 
+
+
+        self.sim_time = self.current_step * self.dt
         done = self.max_steps <= self.current_step
 
-        # apply the action
-        self.scene.action(action)
-
-        # step the simulator
-        Sofa.Simulation.animate(self.root, self.dt)
-        
-        # get the objservation and calculate the reward
-        obs = self.get_observation()
-        
-        rwrd = self.reward(obs)
-
-        if self.record_episode:
-            self.record_frame()
+        self._cumulative_reward += rwrd
+        if done:
+            summary = 'last action:'+ repr(action)+ 'observation: ' +repr(obs)+ 'reward:' +repr(rwrd) + \
+                      " total reward " + repr(self._cumulative_reward)
+            self.debug_output(summary,  filename="/home/sofauser/workdir/summary_debug.txt")
 
         return obs, rwrd, done, {}
 
@@ -253,8 +268,8 @@ def main():
     #design = np.array([[[0, 0]]])
     design = np.array([[[ 0]]])
 
-    a = scene_interface(0, design=design, dt = 0.001, max_steps=20,
-                 meshFolder=meshpath)
+    a = scene_interface(0, design=design, dt = 0.001, max_steps=300,
+                 meshFolder=meshpath, steps_per_action=300, record_episode=True)
     
     done = False
     
@@ -265,12 +280,10 @@ def main():
         #print(a.record_episode)
         factor = a.current_step / a.max_steps
         act = 5*np.cos(factor*np.pi*2)*np.ones(design.shape)
-        action =act*0+ action + 0.2
-        action = action*0
+        action = act*0 + 5.5
         obs2, reward, done, info  = a.step(action)
         total += reward
-        print('reward:', reward, " total reward ", total)
-        print('action:', action)
+        print('previous action:', action, 'observation: ', a.observation,  'reward:', reward, " total reward ", total)
 
         #print(a.simple_render())
    
