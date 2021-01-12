@@ -28,7 +28,6 @@ SofaRuntime.importPlugin('SofaOpenglVisual')
 
 
 
-
 class scene_interface:
     """Scene_interface provides step and reset methods"""
     def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=30,
@@ -84,6 +83,7 @@ class scene_interface:
         self.record_episode = record_episode
 
         # start the scene
+        self.started = False
 
         obs = self.reset()
 
@@ -107,7 +107,7 @@ class scene_interface:
         """Seed the PRNG of this space. """
         self._np_random, seed = seeding.np_random(seed)
         return [seed]
-        
+
     def reset(self):
         """Reset the simulation, return the initial observation"""
         self.root = None
@@ -125,7 +125,8 @@ class scene_interface:
         #importlib.reload(SofaRuntime)
         #importlib.reload(Sofa.Gui)
         #importlib.reload(sceneClass)
-        
+
+
         # every time we reset we setup the simulator fresh.
         SofaRuntime.PluginRepository.addFirstPath(os.getenv('SOFA_ROOT') + "lib/python3/site-packages")
         
@@ -135,15 +136,18 @@ class scene_interface:
             SofaRuntime.PluginRepository.print()
 
         # Register all the common component in the factory.
-        SofaRuntime.importPlugin('SofaOpenglVisual')
-        SofaRuntime.importPlugin("SofaComponentAll")
+        if not self.started:
+            SofaRuntime.importPlugin('SofaOpenglVisual')
+            SofaRuntime.importPlugin("SofaComponentAll")
 
         self.root = Sofa.Core.Node("myroot")
 
+
         # create the scene
+
         self.scene = sceneClass.SceneDefinition(self.root, design=self.design, dt=self.dt,
                           meshFolder=self.meshFolder, with_gui=True, debug=self.debug)
-    
+
         # if we want to record the session we need to have a gui
         if self.record_episode:
             robot_position = np.array([0, 0, 0])
@@ -163,6 +167,7 @@ class scene_interface:
         # This is what starts the environment up (I think) and calling this is 
         # what clears out the old simulation. (Not entirely sure, if this doesn't
         # work, try uncommenting the importlib commands above
+
         Sofa.Simulation.init(self.root)
 
         if self.record_episode:
@@ -174,8 +179,10 @@ class scene_interface:
         if self.debug:
             Sofa.Simulation.print(self.root)
         
-
-        return self.get_observation()
+        self.started = True
+        first_obs = self.get_observation()
+        print("First obs: ", first_obs)
+        return first_obs
     
     def close(self):
         pass
@@ -208,7 +215,7 @@ class scene_interface:
         self.observation = observation 
         return observation
     
-    def step(self, action):
+    def step(self, action, other_info=None):
         "applies action to the scene and returns observation, reward, done,info"
         # action: 3d array same shape as design. 
         # For now: the action array is the pressure in each cavity at each position
@@ -231,16 +238,15 @@ class scene_interface:
             self.scene.action(action)
             # step the simulator
             Sofa.Simulation.animate(self.root, self.dt)
+
             if self.record_episode:
-                self.record_frame()
+                self.record_frame(other_info=other_info)
 
             # step the clock
             self.current_step += 1
             obs = self.get_observation()
             rwrd += self.reward(obs)
         
-
-
 
 
         self.sim_time = self.current_step * self.dt
@@ -254,12 +260,30 @@ class scene_interface:
 
         return obs, rwrd, done, {}
 
-    def record_frame(self):
-        Sofa.Gui.GUIManager.SaveScreenshot(str(self.current_step)+"test.png")
+    def record_frame(self, other_info=None):
+        prefix = ""
+        if other_info is not None:
+            prefix = str(other_info) + "_"
+        Sofa.Gui.GUIManager.SaveScreenshot(prefix + str(self.current_step)+"test.png")
 
 
         
         
+#@profile
+def sim_run(a,design, i):
+    done = False
+    total = 0
+
+    while not done:
+        factor = a.current_step / a.max_steps
+        act = 5 * np.cos(factor * np.pi * 2) * np.ones(design.shape)
+        action = act * 0 + 5.5 + i * 0.01
+        obs2, reward, done, info = a.step(action, other_info="Sim" + str(i))
+        total += reward
+        print('previous action:', action, 'observation: ', a.observation,
+              'reward:', reward, " total reward ", total)
+
+    a.reset()
 
 def main():
     meshpath = '/home/sofauser/workdir/simple_control_policy/one_cell_robot_mesh/'
@@ -268,26 +292,11 @@ def main():
     #design = np.array([[[0, 0]]])
     design = np.array([[[ 0]]])
 
-    a = scene_interface(0, design=design, dt = 0.001, max_steps=300,
-                 meshFolder=meshpath, steps_per_action=300, record_episode=True)
-    
-    done = False
-    
-    total = 0
-    action = 3.0
-    
-    while not done:
-        #print(a.record_episode)
-        factor = a.current_step / a.max_steps
-        act = 5*np.cos(factor*np.pi*2)*np.ones(design.shape)
-        action = act*0 + 5.5
-        obs2, reward, done, info  = a.step(action)
-        total += reward
-        print('previous action:', action, 'observation: ', a.observation,  'reward:', reward, " total reward ", total)
+    a = scene_interface(0, design=design, dt=0.001, max_steps=3,
+                        meshFolder=meshpath, steps_per_action=3, record_episode=False)
 
-        #print(a.simple_render())
-   
- 
+    for i in range(30):
+        sim_run(a, design, i)
 
 if __name__ == '__main__':
     main()
