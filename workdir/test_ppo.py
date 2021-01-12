@@ -91,7 +91,7 @@ def main(args):
             action = nest.map_structure(lambda x: np.zeros_like(x), action)
 
             obs, reward, done, info = env.step(action)
-
+            print(reward, action, obs)
 
 if __name__ == "__main__":
     import argparse

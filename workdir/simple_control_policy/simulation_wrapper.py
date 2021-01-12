@@ -179,11 +179,12 @@ class scene_interface:
             Sofa.Simulation.reset(self.root)
 
         if self.record_episode:
+            print("Supported GUIs are " + Sofa.Gui.GUIManager.ListSupportedGUI(","))
             Sofa.Gui.GUIManager.Init("Recorded_Episode", "qt")
             Sofa.Gui.GUIManager.createGUI(self.root, __file__)
             Sofa.Gui.GUIManager.SetDimension(1080, 1080)
             #Sofa.Gui.GUIManager.MainLoop(self.root)
-            print("Supported GUIs are " + Sofa.Gui.GUIManager.ListSupportedGUI(","))
+
 
         if self.debug:
             Sofa.Simulation.print(self.root)
@@ -305,7 +306,7 @@ def main():
 
     a = scene_interface(0, design=design, dt=0.001, max_steps=3,
                         meshFolder=meshpath, steps_per_action=3, record_episode=True,
-                        debug=False)
+                        debug=True)
 
     for i in range(100):
         sim_run(a, design, i)
