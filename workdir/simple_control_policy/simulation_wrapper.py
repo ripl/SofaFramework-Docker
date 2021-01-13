@@ -32,7 +32,7 @@ class scene_interface:
     """Scene_interface provides step and reset methods"""
     def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
-                 debug=False, record_episode=False, steps_per_action=10):
+                 debug=False, record_episode=False, steps_per_action=3):
         
         # it is 1x1x2 with a cavity in both positions
 
@@ -77,8 +77,8 @@ class scene_interface:
         self.reward_range = (-100000, 100000)
         self.action_space = spaces.Box(low=0.0, high=7.0, shape=design.shape,
                                        dtype=np.float32)
-        self.observation_space = spaces.Box(low=-10000.0, high=10000.0,
-                                            shape=(3,), dtype=np.float32)
+        self.observation_space = spaces.Box(low=2.0, high=2.35,
+                                            shape=(1,), dtype=np.float32)
 
         self.record_episode = record_episode
 
@@ -200,9 +200,13 @@ class scene_interface:
     def reward(self, observation):
         """Returns reward given an observation"""
         #simplified reward is just the radius of the baloon", sub 2 to take away starting value, 0.25 to set desired point and add a little so it starts at zero again
-        goal = 2.137
-        offset = goal - 2.000 # this is meant to make the original obervations close to zero reward
-        rwd = - np.abs(np.linalg.norm(observation) - goal) + offset
+        goal = 2.15
+        obs = np.linalg.norm(observation)
+        def gaussian(x, mu, sig):
+            return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
+        rwd = gaussian(obs, goal, 0.005)
+
         self.debug_output("observation: "+repr(np.linalg.norm(observation))  +"\nreward: "+repr(rwd))
 
         return rwd
@@ -216,6 +220,8 @@ class scene_interface:
         # (they are fixed so it doesn't drift off)
         observation = observation.flatten()
 
+        # making it as simple as I can
+        observation = np.array([np.linalg.norm(observation)])
         if np.isnan(np.sum(observation)):
             self.debug_output("found nan in observation "+str(time.time()),
                               filename="/home/sofauser/workdir/debug_nan.txt")
