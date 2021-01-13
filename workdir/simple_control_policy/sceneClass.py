@@ -169,18 +169,38 @@ def createScene(rootNode):
 
     # this is the Sofa animation function we pass it our animation function
     # and along with the exit function.
+    cnt = 0
+    ac = list(np.linspace(0,7,71))*10
+    ac.sort()
+    print(ac)
+    obs_s = []
+    
     def my_animation(target, scn, factor):
         # this animation makes the two cavities oscillate at different
         # frequencies
         action = np.array([[[3*np.sin(factor*np.pi*2),
                                3*np.sin(3*factor*np.pi*2)]]])
         action = np.array([[[3 * np.sin(factor * np.pi * 2),]]])
+        a = scn.observation()[82]
 
-        action = action - action + 5
-        scn.action(action)
         
-        print(scn.observation()[0])
-        #print("State: ", scn.observation())
+        
+        if scn.cnt < len(ac):
+
+
+            obs_s.append(np.array(a))
+            action = action - action + ac[scn.cnt]
+            scn.cnt += 1
+            
+        else:
+            print(obs_s)
+            np.save('obs.npy', np.array(obs_s))
+            action = action - action
+
+        scn.action(action)
+         
+
+        print("State: ", np.linalg.norm(a)-2.0, " action: ", action, ' obs ', obs_s[-1] )
         
     def ExitFunc(target, scn, factor):
         
@@ -200,6 +220,7 @@ def createScene(rootNode):
     # these two lines hook the animation function defined above to the scene graph
     # and makes it so it is run at every time step.
     AnimationManager(rootNode)
+    scn.cnt = 0
     addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=2.2, mode="once", onDone=ExitFunc)
 
     return rootNode
