@@ -106,7 +106,7 @@ def createScene(rootNode):
     
 
     createSceneReal(rootNode, dt)
-    #animate(animation, {"target": rootNode}, duration=2, mode="once")
+    animate(animation, {"target": rootNode}, duration=2, mode="once")
 
     return rootNode
     
