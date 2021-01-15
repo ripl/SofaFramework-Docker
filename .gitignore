@@ -1,1 +1,13 @@
+# Ignore files from pycharm and temporary files
+.idea/**
+.idea/*
+.idea
+__pycache__
+__pycache__/*
+__pycache__/**
 workdir/MOR_test/mor_output/**
+.ipynb_checkpoints
+CGAL-4.14.3.tar.xz
+cmake-3.12.0-Linux-x86_64.sh
+QtInstallerFramework_3.0_Linux.zip
+*.png
