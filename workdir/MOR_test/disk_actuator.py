@@ -18,13 +18,23 @@ def createSceneReal(rootNode, dt):
     disk_msh = 'disk_'+length_scale+'.msh'
     disk_inside_stl = 'disk_inside'+length_scale+'.stl'
     
-    
+           
+    ###############
+    # the Scene prefab create a bug that I have forget
 
-    
-    
-    
-    rootNode = Scene(rootNode, gravity=[0.0, -0.0, 9.8], dt=dt)
-    rootNode.createObject('RequiredPlugin', pluginName='SoftRobots')
+    # rootNode = Scene(rootNode, gravity=[0.0, -0.0, 9.8], dt=dt)
+    # rootNode.createObject('RequiredPlugin', pluginName='SoftRobots')
+
+    # I replace the 2 previous lignes by the following  
+    rootNode.findData('gravity').value=[0.0, -0.0, 9.8];
+    rootNode.findData('dt').value=dt
+
+    plugins=["SofaPython","SoftRobots","ModelOrderReduction"]
+    for name in plugins:
+        rootNode.createObject('RequiredPlugin', name=name, printLog=False)
+    ###############    
+
+    rootNode.createObject('OglSceneFrame', style="Arrows", alignment="TopRight")
     rootNode.createObject('VisualStyle',
                           displayFlags='showVisualModels hideBehaviorModels showCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe')
 
@@ -35,15 +45,26 @@ def createSceneReal(rootNode, dt):
     YoungModulus = 1800
     InitialValue = 1000.0
     Translation="0 0 0"
+
+    ###############
+    # The LinearSolverConstraintCorrection doesn't work with the HyperReduced component of MOR plugin 
+    # so by putting "withConstrain=False" it's not intentiated anymore but I add a GenericConstraintCorrection as a remplacement
+    # it does the same things normally
+
     Bunny = ElasticMaterialObject(name="disk",
                                   attachedTo=rootNode,
                                   volumeMeshFileName=meshpath+disk_msh,
                                   surfaceMeshFileName=meshpath+disk_inside_stl,
                                   youngModulus=YoungModulus,
-                                  withConstrain=True,
+                                  withConstrain=False, 
+                                  #withConstrain=True,
                                   totalMass=1.0,
                                   translation="0 0 0")
-    
+
+
+    Bunny.createObject('GenericConstraintCorrection', solverName='solver')
+    ###############
+
     fixed_const_str = ""
     fixed_const_lst = [274, 309, 344, 345, 770, 783, 807] 
     for i in fixed_const_lst:
@@ -62,7 +83,7 @@ def createSceneReal(rootNode, dt):
                         translation="0 0 0")
     cavity.createObject('Mesh', src='@loader', name='topo')
     cavity.createObject('MechanicalObject', name='cavity')
-    cavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="0.0001",
+    cavity.createObject('SurfacePressureConstraint', name="SurfacePressureConstraint", template='Vec3d', value="5.0001",
                         triangles='@topo.triangles', visualization='0', showVisuScale='0.0002', valueType="pressure")
     cavity.createObject('BarycentricMapping', name='mapping', mapForces='false', mapMasses='false')
 
@@ -91,22 +112,22 @@ def createScene(rootNode):
 
     
 
-    def animation(target, factor):
+    # def animation(target, factor):
 
-        pressureValue = target.disk.cavity.SurfacePressureConstraint.findData('value').value[0][0] + 0.01
-        pressureValue = np.abs(np.sin(factor)*0.03)
-        if pressureValue > 0.025:
-            pressureValue = 0.02
-        target.disk.cavity.SurfacePressureConstraint.findData('value').value = str(pressureValue)
-        #This is a dummy animation function
-        #I would like to use Model Order Reducation on a model that I 
-        #animate, but I want to figure out how to do it with the default one first
-        #print "Factor ", factor, " ", pressureValue
+    #     pressureValue = target.disk.cavity.SurfacePressureConstraint.findData('value').value[0][0] + 0.01
+    #     pressureValue = np.abs(np.sin(factor)*0.03)
+    #     if pressureValue > 0.025:
+    #         pressureValue = 0.02
+    #     target.disk.cavity.SurfacePressureConstraint.findData('value').value = str(pressureValue)
+    #     #This is a dummy animation function
+    #     #I would like to use Model Order Reducation on a model that I 
+    #     #animate, but I want to figure out how to do it with the default one first
+    #     #print "Factor ", factor, " ", pressureValue
 
     
 
     createSceneReal(rootNode, dt)
-    animate(animation, {"target": rootNode}, duration=2, mode="once")
+    #animate(animation, {"target": rootNode}, duration=2, mode="once")
 
     return rootNode
     
