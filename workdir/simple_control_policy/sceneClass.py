@@ -56,7 +56,8 @@ class SceneDefinition:
             self.rootNode.addObject("RequiredPlugin", name='req_p' + i, pluginName=i)
 
         # create all the material and cavities
-        self.place_materials_and_cavities_and_solvers()
+        #self.place_materials_and_cavities_and_solvers() #testing MOR
+        self.mor_test()
         
         # fix the base (all nodes where z=0)
         if "set_z" in constraint:
@@ -93,7 +94,10 @@ class SceneDefinition:
         # this adds a constraint that fixes these vertexes
         self.volume.addObject("FixedConstraint", drawSize=1.0, indices=fix_string)
     
-    
+    def mor_test(self):
+        from sparse_mor_output.reduced_test import Reduced_test
+        Reduced_test(self.rootNode)
+        
     def place_materials_and_cavities_and_solvers(self):
         """Place solid elastic material and cavities"""
         # linear solver (with parameters from example file)
