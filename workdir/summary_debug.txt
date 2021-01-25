@@ -1,5 +1,0 @@
-0 1 300 301 last action:array([[[5.5]]])observation: array([-0.07093175,  0.18581834,  2.15963774])reward:31.26695690160215 total reward 31.26695690160215
-0 1 300 301 last action:array([[[5.5]]])observation: array([-0.04292615,  0.10335318,  2.00846228])reward:3.4730616170645296 total reward 3.4730616170645296
-0 1 300 301 last action:array([[[5.5]]])observation: array([-0.04292615,  0.10335318,  2.00846228])reward:3.4730616170645296 total reward 3.4730616170645296
-0 1 300 301 last action:array([[[5.5]]])observation: array([-0.07093175,  0.18581834,  2.15963774])reward:31.26695690160215 total reward 31.26695690160215
-0 1 300 301 last action:array([[[5.5]]])observation: array([-0.07093175,  0.18581834,  2.15963774])reward:31.26695690160215 total reward 31.26695690160215

@@ -366,17 +366,27 @@ RUN sudo echo 'export PYTHONPATH=/builds/blender-git/lib/linux_centos7_x86_64/py
 
 
 ### Dummy Screen for headless QT TODO: Get this to actually work
+
+ENV DISPLAY :0
 RUN  sudo apt-get install -y \
     software-properties-common \
-    xvfb
+    xvfb 
 RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
-RUN sudo apt-get install -y x11vnc
+RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y x11vnc 
+RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y xserver-xorg-video-dummy x11-apps
+COPY ./xorg.conf /etc/X11/xorg.conf
 
+## memory profiler
+#RUN pip install -U memory_profiler
 
 # Install vnc, xvfb in order to create a 'fake' display and firefox
+RUN mkdir ~/.vnc && touch ~/.vnc/passwd
+RUN x11vnc -storepasswd "sofauser" ~/.vnc/passwd
+EXPOSE 5900
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD /bin/bash -c "source ~/.bashrc && cd /pkgs/dl/examples/sofa_start && /bin/bash"
-
+#CMD ["/usr/bin/Xorg", "-noreset", "+extension", "GLX", "+extension", "RANDR", "+extension", "RENDER", "-logfile", "./xdummy.log", "-config", "/etc/X11/xorg.conf", ":1"]
+CMD /bin/bash -c "source ~/.bashrc && cd /pkgs/dl/examples/sofa_start && /bin/bash "
+#CMD "/usr/bin/Xorg -noreset +extension GLX +extension RANDR +extension RENDER -logfile ./xdummy.log -config /etc/X11/xorg.conf :1"
 
 
