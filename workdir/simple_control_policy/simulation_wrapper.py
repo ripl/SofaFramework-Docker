@@ -282,28 +282,62 @@ class scene_interface:
 
     def record_frame(self, other_info=None):
         prefix = ""
-        if other_info is not None:
-            prefix = str(other_info) + "_"
 
         Sofa.Simulation.updateVisual(self.root)
-        Sofa.Gui.GUIManager.SaveScreenshot("SIM" + str(self.current_step)+ prefix + "test.png")
+        Sofa.Gui.GUIManager.SaveScreenshot("SIM" + other_info + ".png")
 
 
         
         
-#@profile
+
+from scipy.special import erf
+
+t = np.linspace(0,np.pi+1, 100)
+
+def myerf(x, speed=5, time=0):
+    shift = 0.6
+    tim = time - shift
+    return (erf(speed*x-speed*time)+1)/(2.0)
+
+
+
+f = myerf(t, 10, 1.0) - myerf(t, 10, 2.5)
+m = myerf(t, 10, 1.5) - myerf(t, 10, 3)
+b = myerf(t, 10, 2) - myerf(t, 10, 4)
+
 def sim_run(a,design, i, mx):
     done = False
     total = 0
     x = list(np.linspace(0,1, mx))
     x.reverse()
 
+
     while not done:
-        factor = a.current_step / a.max_steps
-        act = 5 * np.cos(factor * np.pi * 2) * np.ones(design.shape)
-        action = act * 0  + factor*1200
-        action[0,0,0] = factor*2000
-        obs2, reward, done, info = a.step(action, other_info= "_"+str(i) + "_" + str(np.mean(action)))
+        factor = (a.current_step % 440)  # / a.max_step
+        t = factor * 0.01
+        action = np.ones(5)
+        
+        f = myerf(t, time=1.0) - myerf(t, time=2.5)
+        m = myerf(t, time=1.5) - myerf(t, time=3)
+        b = myerf(t, time=2) - myerf(t, time=4)
+        
+        action[0] = m
+        action[1:3] = f
+        action[3:] = b
+
+
+        #action = np.ones(5) * myerf(t, 10, 0.1)
+        #print('time', t, action)
+        ratio = 5.0/10.0
+        action[1:] = action[1:]*2000* ratio
+        action[0] = action[0]*3500* ratio
+
+        act = np.ones(design.shape)
+
+        act[0,0,:] = action
+        action = act 
+        print("hi", action)
+        obs2, reward, done, info = a.step(action, other_info=  "{:04d}".format(a.current_step))
         total += reward
 
         print('previous action:', action, 'observation: ', a.observation,
@@ -324,12 +358,12 @@ def main():
     design = np.array([[[0, 0, 0, 0, 0]]])
     # this is where the example mesh is stored in the docker file.
     meshpath = '/home/sofauser/workdir/simple_control_policy/quadruped/' #
-    a = scene_interface(0, design=design, dt=0.01, max_steps=400,
+    a = scene_interface(0, design=design, dt=0.01, max_steps=3000,
                         meshFolder=meshpath, steps_per_action=1, record_episode=True,
                         debug=False, model_args={'collision':True,'poissonRatio':'0.05',  "youngModulus":'70',
                                                 "totalMass":0.0035, 'constraint':"floor"})
 
-    mx = 10
+    mx = 1
     for i in range(mx):
         sim_run(a, design, i, mx)
 

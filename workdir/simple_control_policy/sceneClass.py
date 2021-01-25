@@ -226,7 +226,7 @@ class SceneDefinition:
             modelSubTopo.addObject('TriangleSetTopologyContainer', position='@../membraneROISubTopo.pointsInROI',
                                       triangles='@../membraneROISubTopo.trianglesInROI', name='container')
             modelSubTopo.addObject('TriangleFEMForceField', template='Vec3d', name='FEM', method='large',
-                                      poissonRatio='0.49', youngModulus=float(self.youngModulus)*1000)
+                                    poissonRatio='0.49', youngModulus=float(self.youngModulus)*100*5/7)
 
     def action(self, act):
         # For now the action will be a 3d matrix, same dim as disign
