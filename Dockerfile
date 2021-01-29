@@ -269,43 +269,40 @@ RUN conda remove --force pyqt qt qtawesome qtconsole qtpy
 # Make a build directory to work in
 #RUN sudo chown -R sofauser:sofauser /builds
 
+
+
+
+#clone python3
+RUN mkdir -p /builds/SofaPython3 && cd /builds/SofaPython3 && \
+    git clone https://github.com/sofa-framework/SofaPython3.git && \
+    cd SofaPython3 && \
+    git checkout ce1183a2ae51f2e2b722863e49cfc98464ca6ec3
+
+
 RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/plugins
 
 #clone the master version of Sofa
 RUN cd /builds/src && \
     git clone https://github.com/sofa-framework/sofa.git . && \
-    git checkout v20.12_beta && \
-    git checkout 184206f126acf0c5d45416fc23cb37baf1971fa5
+    git checkout 36e1030cdbffb1db458344be095b5d80f463b5c5
 
 # clone specific version of STLIB, SoftRobots, and ModelOrderReduction
 RUN cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/STLIB.git && \
     cd STLIB && \
-    git checkout sofaPython3 && \
-    git checkout f2d7f37
+    git checkout 6f329f61af7be3d2baab997e8318e95fde4fecca
 
 RUN cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/SoftRobots.git && \
     cd SoftRobots && \
-    git checkout e762f8759dfe812979bb92b1caf2aa18233d80a8
+    git checkout 93a7d0ed6658b0819cefbd4c91b90f5dae64be78
 
-# MOR NOT supported by python3
-#RUN cd /builds/plugins && \
-#    git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
-#    cd ModelOrderReduction && \
-#    git checkout 83931e5697770e441e15dc3666c32f71fc038983
-
-
-#clone python3
-RUN cd /builds/plugins && \
-    git clone https://github.com/sofa-framework/SofaPython3.git && \
-    cd SofaPython3 && \
-    git checkout ce1183a2ae51f2e2b722863e49cfc98464ca6ec3
+RUN cd /builds/plugins && \ 
+    git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
+    cd ModelOrderReduction && \
+    git checkout 83931e5697770e441e15dc3666c32f71fc038983
 
 COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
-
-#set this so it matches for the CMakeCache
-RUN sudo rm /usr/bin/python && sudo ln -s python3.7 /usr/bin/python
 
 
 # This Cache was made by using cmake-gui and x-docker and copying the resulting cache
@@ -313,12 +310,37 @@ RUN sudo rm /usr/bin/python && sudo ln -s python3.7 /usr/bin/python
 # adds needed compile parameters or if you want to change the build you will need to
 # stop the build at this point, run $x-docker run -it and then use cmake-gui to re-configure
 # and create a new CMakeCache file.
-COPY ./CMakeCachePython3.txt /builds/build/master/CMakeCache.txt
-RUN sudo chown sofauser:sofauser /builds/build/master/CMakeCache.txt
-# build sofa
+
+
+COPY ./makefileCMakeCache.txt /builds/build/master/CMakeCache.txt
 RUN cd /builds/build/master && \
     cmake -c CMakeCache.txt && \
-    ninja -j 8
+    make -j 8 
+
+
+RUN cd /builds/build/master && \ 
+    make install
+
+#ENV SOFA_SRC="/builds/src"
+#ENV SOFA_BLD="/builds/build/master"
+#ENV SP3_SRC="/builds/SofaPython3/SofaPython3"
+#ENV SP3_BLD="/builds/SofaPython3/SofaPython3/build"
+
+#RUN cd /builds/SofaPython3/SofaPython3 && \ 
+#    git checkout `git rev-list -n 1 --before="2020-10-6 12:37" master`    
+#RUN mkdir -p $SP3_BLD && \ 
+#    cd $SP3_BLD && \ 
+#    cmake -DSP3_BUILD_TEST=OFF -DCMAKE_PREFIX_PATH=$SOFA_BLD/install/lib/cmake $SP3_SRC && \
+#    make -j 8
+
+
+#COPY ./ninjaCMakeCache.txt /builds/build/master/CMakeCache.txt
+#RUN sudo chown sofauser:sofauser /builds/build/master/CMakeCache.txt
+## build sofa
+#RUN cd /builds/build/master && \
+#    cmake -c CMakeCache.txt && \
+#    ninja -j 8
+
 
 
 # Cleanup
@@ -335,13 +357,6 @@ RUN sudo apt-get clean -y \
 #####################################################################################################################################RUN sudo chmod -R a+wr /builds
 
 
-# Add SofaPython3 to plugin_list
-RUN cd /builds/build/master/lib && \
-    cp plugin_list.conf.default plugin_list.conf && \
-    echo $'\nSofaPython3 NO_VERSION\n' >> plugin_list.conf
-
-#### user used to be here
-
 
 RUN sudo mkdir -p /run/user/1000 && sudo chown sofauser:sofauser /run/user/1000/
 
@@ -349,44 +364,49 @@ RUN sudo mkdir -p /run/user/1000 && sudo chown sofauser:sofauser /run/user/1000/
 RUN sudo chmod a+rw /etc/bash.bashrc
 RUN sudo echo 'source /opt/qt512/bin/qt512-env.sh && "$@"' >> /etc/bash.bashrc
 RUN sudo echo 'export QTIFWDIR="/builds/Qt/Tools/QtInstallerFramework/3.0"' >> /etc/bash.bashrc
-RUN sudo echo 'export PYTHONPATH=/builds/build/master/lib/python3/site-packages:/builds/plugins/SofaPython3/splib:/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python3/src:/builds/plugins/SoftRobots/python3:$PYTHONPATH' >> /etc/bash.bashrc
+
 RUN sudo echo 'export PATH=/builds/build/master/bin:$PATH' >> /etc/bash.bashrc
 RUN sudo echo 'export PATH=$QTIFWDIR/bin:$PATH' >> /etc/bash.bashrc
 RUN sudo echo 'export XDG_RUNTIME_DIR=/run/user/1000' >> /etc/bash.bashrc
 RUN sudo echo 'export SOFA_ROOT=/builds/build/master/' >> /etc/bash.bashrc
 RUN sudo echo 'export LD_LIBRARY_PATH=/home/sofauser/anaconda3/lib:$LD_LIBRARY_PATH' >> /etc/bash.bashrc
 
+
+
+#RUN sudo echo 'export PYTHONPATH=/builds/build/master/lib/python3/site-packages:/builds/plugins/SofaPython3/splib:/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python3/src:/builds/plugins/SoftRobots/python3:$PYTHONPATH' >> /etc/bash.bashrc
+RUN sudo echo 'export PYTHONPATH=/builds/build/master/lib/python/site-packages:/builds/plugins/ModelOrderReduction/python:/builds/src/tools/sofa-launcher:/builds/plugins/STLIB/python:/builds/plugins/SoftRobots/python:$PYTHONPATH' >> /etc/bash.bashrc
 RUN sudo echo 'export PYTHONPATH=/home/sofauser/workdir/simple_control_policy:$PYTHONPATH' >> /etc/bash.bashrc
-RUN sudo echo 'export PYTHONPATH=/builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages:$PYTHONPATH' >> /etc/bash.bashrc
+#RUN sudo echo 'export PYTHONPATH=/builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages:$PYTHONPATH' >> /etc/bash.bashrc
 
+###################RUN ln -sFfv $(find $SP3_BLD/lib/python3/site-packages -maxdepth 1 -mindepth 1 -not -name "*.py") $(python3 -m site --user-site)
 
-# Python2 kernel for jupyter notebook
-# RUN python -m ipykernel install --user
-# RUN sudo apt-get install -y screen
-
-
-### Dummy Screen for headless QT TODO: Get this to actually work
-
-ENV DISPLAY :0
-RUN  sudo apt-get install -y \
-    software-properties-common \
-    xvfb 
-RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
-RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y x11vnc 
-RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y xserver-xorg-video-dummy x11-apps
-COPY ./xorg.conf /etc/X11/xorg.conf
-
-## memory profiler
-#RUN pip install -U memory_profiler
-
-# Install vnc, xvfb in order to create a 'fake' display and firefox
-RUN mkdir ~/.vnc && touch ~/.vnc/passwd
-RUN x11vnc -storepasswd "sofauser" ~/.vnc/passwd
-EXPOSE 5900
+## Python2 kernel for jupyter notebook
+## RUN python -m ipykernel install --user
+## RUN sudo apt-get install -y screen
+#
+#
+#### Dummy Screen for headless QT TODO: Get this to actually work
+#
+#ENV DISPLAY :0
+#RUN  sudo apt-get install -y \
+#    software-properties-common \
+#    xvfb
+#RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+#RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y x11vnc
+#RUN sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y xserver-xorg-video-dummy x11-apps
+#COPY ./xorg.conf /etc/X11/xorg.conf
+#
+### memory profiler
+##RUN pip install -U memory_profiler
+#
+## Install vnc, xvfb in order to create a 'fake' display and firefox
+#RUN mkdir ~/.vnc && touch ~/.vnc/passwd
+#RUN x11vnc -storepasswd "sofauser" ~/.vnc/passwd
+#EXPOSE 5900
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 #CMD ["/usr/bin/Xorg", "-noreset", "+extension", "GLX", "+extension", "RANDR", "+extension", "RENDER", "-logfile", "./xdummy.log", "-config", "/etc/X11/xorg.conf", ":1"]
-CMD /bin/bash -c "source ~/.bashrc && cd /pkgs/dl/examples/sofa_start && /bin/bash "
+CMD /bin/bash -c "source ~/.bashrc && cd ~ && /bin/bash "
 #CMD "/usr/bin/Xorg -noreset +extension GLX +extension RANDR +extension RENDER -logfile ./xdummy.log -config /etc/X11/xorg.conf :1"
 
 

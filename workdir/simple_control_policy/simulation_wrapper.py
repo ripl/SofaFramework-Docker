@@ -14,7 +14,7 @@ from gym import spaces
 from gym.utils import seeding
 import numpy as np
 import sceneClass
-
+import time
 
 #class MyController(Sofa.Core.Controller):
 #    def __init__(self, *args, **kwargs):
@@ -27,13 +27,14 @@ import sceneClass
 SofaRuntime.importPlugin('SofaOpenglVisual')
 
 
-
+@timit
 class scene_interface:
     """Scene_interface provides step and reset methods"""
+    @timit
     def __init__(self, env_id, design= np.array([[[0, 0]]]), dt = 0.001, max_steps=300,
                  meshFolder=os.path.dirname(os.path.abspath(__file__)) + '/mesh/',
                  debug=False, record_episode=False, steps_per_action=3, model_args={}):
-        
+          
         # it is 1x1x2 with a cavity in both positions
 
         # For now: Design is a 3 dim array that specifies if it is cavity or material
