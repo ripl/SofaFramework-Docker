@@ -1,0 +1,7 @@
+0 1 700 1401 last action:array([[[0., 0., 0., 0., 0.]]])observation: array([2.3499999])reward:0.0 total reward 0.0
+0 1 700 1401 last action:array([[[0., 0., 0., 0., 0.]]])observation: array([2.3499999])reward:0.0 total reward 0.0
+0 1 3000 6001 last action:array([[[0., 0., 0., 0., 0.]]])observation: array([2.3499999])reward:0.0 total reward 0.0
+0 1 3000 6001 last action:array([[[   0.        ,    0.        ,    0.        , 1799.99999397,
+         1799.99999397]]])observation: array([2.3499999])reward:0.0 total reward 0.0
+0 1 3000 6001 last action:array([[[2.64276618e-02, 6.43929354e-12, 6.43929354e-12, 9.98129048e+02,
+         9.98129048e+02]]])observation: array([2.3499999])reward:0.0 total reward 0.0
