@@ -1,8 +1,8 @@
 #/usr/bin/python3
 import sys, os
 dir_path = os.path.dirname(os.path.realpath(__file__))
-sys.path.insert(0, os.path.join(dir_path, 'lib'))
-sys.path.insert(0, os.path.join(dir_path, 'lib/x64'))
+#sys.path.insert(0, os.path.join(dir_path, 'lib'))
+#sys.path.insert(0, os.path.join(dir_path, 'lib/x64'))
 import subprocess
 import json
 import time
@@ -15,33 +15,23 @@ class NumpyArrayEncoder(JSONEncoder):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
 
-class SimulationInterface(object):
-    def __init__(self):
-        self.interface = LeapDecoder()
-
-    def step(self, action):
-        # must make sure both action and obs are np arrays
-        action = {"array" : action}
-        encoded_action = json.dumps(action, cls=NumpyArrayEncoder)
-        self.interface.send(encoded_action)
-        obs = self.interface.receive()
-        return obs
 
 
 
-
-class LeapDecoder(object):
-    def __init__(self):
+class ActionEncoder(object):
+    def __init__(self, runSofa_cmd_args, cwd_dir, additional_python_args=None):
         self.r_send, self.w_send = os.pipe()
         self.r_recv, self.w_recv = os.pipe()
         os.set_inheritable(self.r_send, True)
         os.set_inheritable(self.w_recv, True)
         dir_path = os.path.dirname(os.path.realpath(__file__))
         #self.daemon = subprocess.Popen(['leapd'])
-        self.encoder = subprocess.Popen([
-                'python2', os.path.join(dir_path, 'command_decoder.py'),
-                f'{self.r_send}', f'{self.w_recv}'
-            ], close_fds=False)
+        #self.encoder = subprocess.Popen([
+        #        'python2', os.path.join(dir_path, 'command_decoder.py'),
+        #        f'{self.r_send}', f'{self.w_recv}'
+        #    ], close_fds=False)
+        self.encoder = subprocess.Popen(runSofa_cmd_args + "--argv " + additional_python_args +
+            f' --r_send {self.r_send} '+ f' --w_recv {self.w_recv}', cwd=cwd_dir, shell=True, close_fds=False)
         print('waiting for deamon to start...')
         delay = 1
         for i in range(delay):
@@ -52,12 +42,9 @@ class LeapDecoder(object):
         self.send('close')
         os.close(self.w_send)
         os.close(self.r_recv)
-        self.daemon.terminate()
+        #self.daemon.terminate()
 
     def send(self, msg):
-
-        if self.encoder.poll() is not None:
-            raise ValueError("LeapDecoder as terminated.")
         length = f'{len(msg):05}'
         os.write(self.w_send, length.encode('utf-8'))
         os.write(self.w_send, msg.encode('utf-8'))
@@ -68,21 +55,11 @@ class LeapDecoder(object):
         return json.loads(msg)
 
 
-class LeapCamera(object):
-    def __init__(self):
-        self.comms = LeapDecoder()
-
-    def render(self):
-        self.comms.send('render')
-
-    def detect(self):
-        self.comms.send('detect')
-        return self.comms.receive()
 
 
 class SimulationInterface(object):
-    def __init__(self):
-        self.interface = LeapDecoder()
+    def __init__(self, runSofa_cmd_args, cwd_dir, additional_python_args=None):
+        self.interface = ActionEncoder(runSofa_cmd_args, cwd_dir=cwd_dir, additional_python_args=additional_python_args)
 
     def step(self, action):
         # must make sure both action and obs are np arrays

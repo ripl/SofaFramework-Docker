@@ -75,6 +75,8 @@ class SceneDefinition:
             self.rootNode.createObject("RequiredPlugin", name='req_p' + i, pluginName=i)
         print("req plugins?")
         # create all the material and cavities
+        
+        print("arguments recieved", sys.argv)
         self.place_materials_and_cavities_and_solvers() #testing MOR
         #self.mor_test()
         
