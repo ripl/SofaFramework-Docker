@@ -274,7 +274,7 @@ RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/pl
 #clone the master version of Sofa
 RUN cd /builds/src && \
     git clone https://github.com/sofa-framework/sofa.git . && \
-    git checkout v20.12_beta && \
+    git checkout v20.12 && \
     git checkout 184206f126acf0c5d45416fc23cb37baf1971fa5
 
 # clone specific version of STLIB, SoftRobots, and ModelOrderReduction
