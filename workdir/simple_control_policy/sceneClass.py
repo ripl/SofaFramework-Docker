@@ -268,10 +268,11 @@ class SceneDefinition:
                 #print('ijk', ijk)
 
                 cavity_i_j_k_str = 'cavity_' + str(i) + "_" + str(j) + "_" + str(k)
-                with self.rootNode["volume." + cavity_i_j_k_str + ".SurfacePressureConstraint.value"].writeableArray() as wa:
-                    #print("HERE", wa, act, wa[0], act[ijk])
-                    wa[0] = act[ijk]
-                    del wa
+                print("HELLO", dir(self.rootNode.getChild()))#.findData(cavity_i_j_k_str).SurfacePressureConstraint.value)) 
+                #with self.rootNode["volume." + cavity_i_j_k_str + ".SurfacePressureConstraint.value"].writeableArray() as wa:
+                #    #print("HERE", wa, act, wa[0], act[ijk])
+                #    wa[0] = act[ijk]
+                #    del wa
                     
     def observation(self):
         print("observation called")
@@ -348,11 +349,11 @@ def createScene(rootNode):
 
     # these two lines hook the animation function defined above to the scene graph
     # and makes it so it is run at every time step.
-    #AnimationManager(rootNode)
+    AnimationManager(rootNode)
     scn.cnt = 0
     scn.design = design
     
-    #addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=2.2, mode="once", onDone=ExitFunc)
+    addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=2.2, mode="once", onDone=ExitFunc)
     #my_animation(rootNode, scn, 11.0)
     return rootNode
 
