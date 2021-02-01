@@ -184,7 +184,7 @@ class SceneDefinition:
 
                 cavity_i_j_k_str = 'cavity_' + str(i) + "_" + str(j) + "_" + str(k)
                 cavity = self.volume.createChild(cavity_i_j_k_str)
-                
+                print("\n\n\n\n\n\n\n\n\ncreated", cavity_i_j_k_str)
                 # load the specific file, it should be at the correct coordinates and match with a corrisponding
                 # one in the volume
                 cavity.createObject('MeshSTLLoader', name='loader',
@@ -268,7 +268,11 @@ class SceneDefinition:
                 #print('ijk', ijk)
 
                 cavity_i_j_k_str = 'cavity_' + str(i) + "_" + str(j) + "_" + str(k)
-                print("HELLO", dir(self.rootNode.getChild()))#.findData(cavity_i_j_k_str).SurfacePressureConstraint.value)) 
+                print(cavity_i_j_k_str)
+                print("HELLO", self.rootNode.volume.getChildren()[0].getPathName())#.findData(cavity_i_j_k_str).SurfacePressureConstraint.value)) 
+
+                print("HELLO2", self.rootNode.volume.getChild(cavity_i_j_k_str).SurfacePressureConstraint.value)
+                self.rootNode.volume.getChild(cavity_i_j_k_str).SurfacePressureConstraint.value = act[ijk]
                 #with self.rootNode["volume." + cavity_i_j_k_str + ".SurfacePressureConstraint.value"].writeableArray() as wa:
                 #    #print("HERE", wa, act, wa[0], act[ijk])
                 #    wa[0] = act[ijk]
@@ -327,7 +331,7 @@ def createScene(rootNode):
         print("Done with animation")
         exit()
 
-    example = "one cell"
+    example = "two cell"
     #example = "one cell"
     if example == "two cell":
         # it is 1x1x2 with a cavity in both positions
