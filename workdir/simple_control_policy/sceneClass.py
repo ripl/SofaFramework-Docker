@@ -13,8 +13,10 @@ import os
 #from stlib3.scene import Scene
 import numpy as np
 import timeit
+
 from splib.animation import AnimationManager
 from splib.animation import animate as addAnimation
+from command_decoder import action_decoder as AD
 
 
 
@@ -23,11 +25,19 @@ from splib.animation import animate as addAnimation
 
 class SceneDefinition:
     """This class handles the scene creation of the robot model"""
-    def __init__(self, rootNode, design=np.zeros([1,1,1]), meshFolder="",
-                 poissonRatio=0.3, youngModulus= 18000, totalMass = 1.0,
-                 dt=0.001, with_gui=False, debug=False, collision=False, constraint=""):
+    def __init__(self,
+                 rootNode,
+                 design=np.zeros([1,1,1]),
+                 meshFolder="",
+                 poissonRatio=0.3,
+                 youngModulus= 18000,
+                 totalMass = 1.0,
+                 dt=0.001,
+                 with_gui=False,
+                 debug=False,
+                 collision=False,
+                 constraint=""):
         """initialize the class"""
-        print("__init__ called")
         properties = [
             {'name': 'rootNode', 'type': 'sofa node', 'help': 'root node', 'default': ''},
             {'name': 'meshFolder', 'type': 'string', 'help': 'Path to volume mesh and cavity files', 'default': ''},
@@ -47,6 +57,10 @@ class SceneDefinition:
         self.with_gui = with_gui
         self.debug = debug
         self.with_collision = collision
+
+
+        #this is to communicate with the python3 process
+        self.action_decoder = AD(sys.argv[-3], sys.argv[-1])
 
 
         # this is the position and orientation of the robot. It is not fully
@@ -71,12 +85,9 @@ class SceneDefinition:
         required_plugins = ['SofaOpenglVisual', 'SofaSparseSolver', 
                             'SoftRobots',  'SofaMiscCollision']
         for i in required_plugins:
-            print(i)
             self.rootNode.createObject("RequiredPlugin", name='req_p' + i, pluginName=i)
-        print("req plugins?")
         # create all the material and cavities
         
-        print("arguments recieved", sys.argv)
         self.place_materials_and_cavities_and_solvers() #testing MOR
         #self.mor_test()
         
@@ -87,7 +98,6 @@ class SceneDefinition:
             self.add_floor()
 
     def add_floor(self):
-        print("add_floor called")
         #Creating the floor
 
         planeNode = self.rootNode.createChild('Plane')
@@ -105,7 +115,6 @@ class SceneDefinition:
         '''Fix all vertexes in mesh where z=0, this is so that one the robot doesn't
         fly off to infinity if it gets pushed a little bit, and two so it has something
         to push against while for now: it does simple shape rewards'''
-        print("fix_z called")
         vertexes = self.rootNode.volume.loader.getData('position').value #.array()
         fix_string = " "
         for i, pos in enumerate(vertexes):
@@ -118,13 +127,11 @@ class SceneDefinition:
         self.volume.createObject("FixedConstraint", drawSize=1.0, indices=fix_string)
     
     def mor_test(self):
-        print("mor_test callled")
         from sparse_mor_output.reduced_test import Reduced_test
         Reduced_test(self.rootNode)
         
     def place_materials_and_cavities_and_solvers(self):
         """Place solid elastic material and cavities"""
-        print("place_materials_and_cavities_and_solvers called")
         # linear solver (with parameters from example file)
         self.rootNode.createObject('GenericConstraintSolver', name='gencs', maxIterations='500', printLog='0',
                                 tolerance='0.0000001')
@@ -145,14 +152,14 @@ class SceneDefinition:
 
         #trail
 
-        self.rootNode.createObject('GenericConstraintSolver', printLog='0', tolerance="1e-15", maxIterations="5000")
+        #self.rootNode.createObject('GenericConstraintSolver', printLog='0', tolerance="1e-15", maxIterations="5000")
         self.rootNode.createObject('DefaultPipeline', name='collisionPipeline', verbose="0")
         self.rootNode.createObject('BruteForceDetection', name="N2")
         self.rootNode.createObject('RuleBasedContactManager', name="Response", response="FrictionContact",
-                              rules="0 * FrictionContact?mu=0.5")
+                                   rules="0 * FrictionContact?mu=0.5")
         self.rootNode.createObject('DefaultContactManager', response="FrictionContact", responseParams="mu=0.7")
         self.rootNode.createObject('LocalMinDistance', name="Proximity", alarmDistance="2.5", contactDistance="0.5",
-                              angleCone="0.01")
+                                   angleCone="0.01")
 
 
         
@@ -209,15 +216,6 @@ class SceneDefinition:
 
             self.rootNode.createObject('VisualStyle',
                                     displayFlags='showBehaviorModels')
-            modelVisu = self.volume.createChild('visu')
-            #modelVisu.createObject('MeshSTLLoader', name='loader', filename=self.meshFolder + "volume_collision.stl")
-
-            modelVisu.createObject('OglModel',
-                                   src='@../loader',
-                                   template='ExtVec3f',
-                                   color='0.7 0.7 0.7 0.6')
-
-            modelVisu.createObject('BarycentricMapping')
 
             robotVisu = self.volume.createChild('robotvisu')
             robotVisu.createObject('TriangleSetTopologyContainer', name='container')
@@ -246,8 +244,9 @@ class SceneDefinition:
             volume_collision.createObject('BarycentricMapping')
 
 
-        if self.with_collision:
-            print("BAD CODE")
+        if self.with_collision: # TO ADD THIS TO THE REAL PIPELINE WE WOULD NEED
+            # TO FULLY CHANGE THE DESIGN SPACE
+            print("BAD CODE bc it isn't really in the design space")
             # Sub topology this adds "the piece of paper layer"
             self.volume.createObject('BoxROI', name='boxROISubTopo', box='0 0 0 150 -100 1', drawBoxes='true')
             self.volume.createObject('BoxROI', name='membraneROISubTopo', box='0 0 -0.1 150 -100 0.1',
@@ -271,9 +270,9 @@ class SceneDefinition:
 
                 cavity_i_j_k_str = 'cavity_' + str(i) + "_" + str(j) + "_" + str(k)
                 print(cavity_i_j_k_str)
-                print("HELLO", self.rootNode.volume.getChildren()[0].getPathName())#.findData(cavity_i_j_k_str).SurfacePressureConstraint.value)) 
+                #print("HELLO", self.rootNode.volume.getChildren()[0].getPathName())#.findData(cavity_i_j_k_str).SurfacePressureConstraint.value)) #
 
-                print("HELLO2", self.rootNode.volume.getChild(cavity_i_j_k_str).SurfacePressureConstraint.value)
+                #print("HELLO2", self.rootNode.volume.getChild(cavity_i_j_k_str).SurfacePressureConstraint.value)
                 self.rootNode.volume.getChild(cavity_i_j_k_str).SurfacePressureConstraint.value = act[ijk]
                 #with self.rootNode["volume." + cavity_i_j_k_str + ".SurfacePressureConstraint.value"].writeableArray() as wa:
                 #    #print("HERE", wa, act, wa[0], act[ijk])
@@ -285,12 +284,22 @@ class SceneDefinition:
         return self.rootNode.volume.dofs.getData('position').value
         
 
+def sys_arvg_dict():
+    out_dct = {}
+    i = 0
+    while i < len(sys.argv)-1:
+        print(sys.argv[i+1], sys.argv[i+2])
+        out_dct[sys.argv[i+1]] = sys.argv[i+2]
+        i+=2
+
+    return out_dct
+
 
 def createScene(rootNode):
     '''createScene(rootNode) this is so this works with runSofa'''
     
     print("Example behavior using runSofa animation stepper function")
-    
+
 
     # this is the Sofa animation function we pass it our animation function
     # and along with the exit function.
@@ -298,42 +307,50 @@ def createScene(rootNode):
     ac = list(np.linspace(0,7,71))*10
     ac.sort()
     obs_s = []
-    
+
+
+
+
     def my_animation(target, scn, factor):
         # this animation makes the two cavities oscillate at different
         # frequencies
+        action_decoder = scn.action_decoder
         action = np.array([[[3*np.sin(factor*np.pi*2),
                                3*np.sin(3*factor*np.pi*2)]]])
         action = np.ones(scn.design.shape)*factor*6
+
         #action = np.ones(scn.design.shape) * float(factor)
-        a = scn.observation()[82]
+        first_command = action_decoder.recieve_command()
+        print("command is", first_command)
+        if isinstance(first_command, np.ndarray) or first_command == 'reset':
+            print("command is", first_command)
+            if isinstance(first_command, np.ndarray) and \
+                    np.array_equal(first_command.shape, design.shape):
+                scn.action(first_command)
+                a = scn.observation()[82]
+                action_decoder.send_observation(np.array(a))
 
-        
-        '''
-        if scn.cnt < len(ac):
-
-
-            obs_s.append(np.array(a))
-            action = action - action + ac[scn.cnt]
-            scn.cnt += 1
-
+            elif first_command == "reset":
+                import time
+                print("ACTION IS REALLY RESET")
+                time.sleep(1)
+                target.reset()
+                print("DIR TARGET", dir(target))
+                a = scn.observation()[82]
+                action_decoder.send_observation(np.array(a))
+                print("observation has been sent in")
+        elif first_command == "close":
+            exit()
         else:
-            print(obs_s)
-            np.save('obs.npy', np.array(obs_s))
-            action = action - action
-
-        '''
-        scn.action(action)
+            print(first_command, "VALUE ERROR")
+            raise ValueError
 
 
-        #print("State: ", np.linalg.norm(a)-2.0, " action: ", action, ' obs ', obs_s[-1] )
 
-    def ExitFunc(target, scn, factor):
+    example = "one cell"
 
-        print("Done with animation")
-        exit()
+    scene_params = sys_arvg_dict()
 
-    example = "two cell"
     #example = "one cell"
     if example == "two cell":
         # it is 1x1x2 with a cavity in both positions
@@ -359,7 +376,7 @@ def createScene(rootNode):
     scn.cnt = 0
     scn.design = design
     
-    addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=2.2, mode="once", onDone=ExitFunc)
+    addAnimation(my_animation, {"target": rootNode, "scn":scn}, duration=2.2, mode="loop")
     #my_animation(rootNode, scn, 11.0)
     return rootNode
 

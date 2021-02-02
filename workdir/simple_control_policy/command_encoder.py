@@ -26,12 +26,12 @@ class ActionEncoder(object):
         os.set_inheritable(self.w_recv, True)
         dir_path = os.path.dirname(os.path.realpath(__file__))
         #self.daemon = subprocess.Popen(['leapd'])
-        #self.encoder = subprocess.Popen([
-        #        'python2', os.path.join(dir_path, 'command_decoder.py'),
-        #        f'{self.r_send}', f'{self.w_recv}'
-        #    ], close_fds=False)
-        self.encoder = subprocess.Popen(runSofa_cmd_args + "--argv " + additional_python_args +
-            f' --r_send {self.r_send} '+ f' --w_recv {self.w_recv}', cwd=cwd_dir, shell=True, close_fds=False)
+        self.encoder = subprocess.Popen([
+                'python2', os.path.join(dir_path, 'command_decoder.py'),
+                f'{self.r_send}', f'{self.w_recv}'
+            ], close_fds=False)
+        #self.encoder = subprocess.Popen(runSofa_cmd_args + "--argv " + additional_python_args +
+        #    f' --r_send {self.r_send} '+ f' --w_recv {self.w_recv}', cwd=cwd_dir, shell=True, close_fds=False)
         print('waiting for deamon to start...')
         delay = 1
         for i in range(delay):
@@ -72,7 +72,7 @@ class SimulationInterface(object):
 
 
 if __name__ == '__main__':
-    leap = SimulationInterface()
+    leap = SimulationInterface(None, None, None)
 
     for i in range(10):
         t = time.time()
