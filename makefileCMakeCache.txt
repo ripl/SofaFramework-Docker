@@ -124,7 +124,7 @@ CMAKE_BUILD_TYPE:STRING=
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
 //CXX compiler.
-CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-8
+CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++-6.0
 
 //LLVM archiver
 CMAKE_CXX_COMPILER_AR:FILEPATH=/usr/lib/llvm-8/bin/llvm-ar
@@ -148,7 +148,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler.
-CMAKE_C_COMPILER:FILEPATH=/usr/bin/clang-8
+CMAKE_C_COMPILER:FILEPATH=/usr/bin/clang-6.0
 
 //LLVM archiver
 CMAKE_C_COMPILER_AR:FILEPATH=/usr/lib/llvm-8/bin/llvm-ar
@@ -2079,4 +2079,3 @@ _Boost_USE_MULTITHREADED_LAST:INTERNAL=TRUE
 gtest_disable_pthreads-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: gtest_force_shared_crt
 gtest_force_shared_crt-ADVANCED:INTERNAL=1
-
