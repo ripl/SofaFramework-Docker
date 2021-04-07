@@ -1,4 +1,5 @@
 # Ignore files from pycharm and temporary files
+*.sif
 .idea/**
 .idea/*
 .idea
