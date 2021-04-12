@@ -236,14 +236,34 @@ RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     pyyaml \
     pandas \
     tensorboard
+
+ENV LC_ALL="C.UTF-8"
+ENV LANG="C.UTF-8"
 RUN apt-get install -y nvidia-common && \
     DEBIAN_FRONTEND=noninteractive ubuntu-drivers autoinstall
 
+# Install mesh dependencies
+
+RUN cd /usr/local && \
+    wget -nc  http://gmsh.info/bin/Linux/gmsh-4.6.0-Linux64-sdk.tgz && \
+    tar -xf gmsh-4.6.0-Linux64-sdk.tgz && \
+    rm gmsh-4.6.0-Linux64-sdk.tgz
+ENV PYTHONPATH=/usr/local/gmsh-4.6.0-Linux64-sdk/lib:$PYTHONPATH
+ENV PATH=/usr/local/gmsh-4.6.0-Linux64-sdk/bin:$PATH
+
+
+##############################################################################
+# Weird kernel issue with qt
+##############################################################################
+RUN strip --remove-section=.note.ABI-tag /opt/qt512/lib/libQt5Core.so.5
 
 ##############################################################################
 # Add sofauser and cleanup
 # runSofa cannot be used by the root user so this must be added.
 ##############################################################################
+
+# install other tools
+RUN apt-get install -y tree
 
 # Cleanup
 RUN apt-get clean -y \
@@ -261,7 +281,7 @@ RUN mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-pa
     mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/2.91 /usr/lib/python3.7/dist-packages && \
     rm -r /builds/blender-git
 
-ENV PYTHONPATH "/pkgs:/builds/python"
+ENV PYTHONPATH "/pkgs:/builds/python:$PYTHONPATH"
 
 RUN apt-get install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
