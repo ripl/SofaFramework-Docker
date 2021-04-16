@@ -1,7 +1,7 @@
 FROM nvidia/cudagl:10.1-devel-ubuntu18.04
 
 RUN apt-get update --fix-missing && apt-get upgrade -y
-
+RUN apt-get update --fix-missing
 # Install tools
 RUN apt-get install -y \
     apt-utils \
@@ -181,11 +181,11 @@ RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/pl
 COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
 COPY ./makefileCMakeCache.txt /builds/build/master/CMakeCache.txt
 
+# clone specific version of Sofa, STLIB, SoftRobots, and ModelOrderReduction
 RUN cd /builds/src && \
     git clone https://github.com/sofa-framework/sofa.git . && \
     git checkout 36e1030cdbffb1db458344be095b5d80f463b5c5 && \
 
-    # clone specific version of STLIB, SoftRobots, and ModelOrderReduction
     cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/STLIB.git && \
     cd STLIB && \
@@ -236,15 +236,39 @@ RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     pyyaml \
     pandas \
     tensorboard
+
+ENV LC_ALL="C.UTF-8"
+ENV LANG="C.UTF-8"
 RUN apt-get install -y nvidia-common && \
     DEBIAN_FRONTEND=noninteractive ubuntu-drivers autoinstall
 
+# Install mesh dependencies
+
+RUN cd /usr/local && \
+    wget -nc  http://gmsh.info/bin/Linux/gmsh-4.6.0-Linux64-sdk.tgz && \
+    tar -xf gmsh-4.6.0-Linux64-sdk.tgz && \
+    rm gmsh-4.6.0-Linux64-sdk.tgz
+ENV PYTHONPATH=/usr/local/gmsh-4.6.0-Linux64-sdk/lib:$PYTHONPATH
+ENV PATH=/usr/local/gmsh-4.6.0-Linux64-sdk/bin:$PATH
+
+
+##############################################################################
+# Weird kernel issue with qt
+##############################################################################
+RUN strip --remove-section=.note.ABI-tag /opt/qt512/lib/libQt5Core.so.5
 
 ##############################################################################
 # Add sofauser and cleanup
 # runSofa cannot be used by the root user so this must be added.
 ##############################################################################
 
+# install other tools
+RUN apt-get install -y tree gmsh x11-utils xserver-xorg-video-dummy
+RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
+    pynput pyautogui
+RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y python3-tk python3-dev
+ENV DISPLAY :0
+COPY dummy.conf /dummy.conf
 # Cleanup
 RUN apt-get clean -y \
     && apt-get autoremove -y \
@@ -261,7 +285,7 @@ RUN mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-pa
     mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/2.91 /usr/lib/python3.7/dist-packages && \
     rm -r /builds/blender-git
 
-ENV PYTHONPATH "/pkgs:/builds/python"
+ENV PYTHONPATH "/pkgs:/builds/python:$PYTHONPATH"
 
 RUN apt-get install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
