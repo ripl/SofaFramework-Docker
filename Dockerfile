@@ -269,6 +269,7 @@ RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
 RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y python3-tk python3-dev
 ENV DISPLAY :0
 COPY dummy.conf /dummy.conf
+
 # Cleanup
 RUN apt-get clean -y \
     && apt-get autoremove -y \
