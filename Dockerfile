@@ -1,7 +1,6 @@
 FROM nvidia/cudagl:10.1-devel-ubuntu18.04
 
 RUN apt-get update --fix-missing && apt-get upgrade -y
-RUN apt-get update --fix-missing
 # Install tools
 RUN apt-get install -y \
     apt-utils \
@@ -263,7 +262,8 @@ RUN strip --remove-section=.note.ABI-tag /opt/qt512/lib/libQt5Core.so.5
 ##############################################################################
 
 # install other tools
-RUN apt-get install -y tree gmsh x11-utils xserver-xorg-video-dummy
+RUN apt-get update --fix-missing
+RUN apt-get install -y tree x11-utils xserver-xorg-video-dummy
 RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     pynput pyautogui
 RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y python3-tk python3-dev
