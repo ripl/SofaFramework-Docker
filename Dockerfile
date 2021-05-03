@@ -224,7 +224,7 @@ RUN cd /builds/src && \
 # Install pytorch and dl deps
 ##############################################################################
 RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
-    torch==1.7.1+cu101 torchvision==0.8.2+cu101 -f https://download.pytorch.org/whl/torch_stable.html
+    torch==1.7.1+cpu torchvision==0.8.2+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN PIP_TARGET=/usr/lib/python3.7 python3.7 -m pip install --upgrade pip
 RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     gin-config \
@@ -236,10 +236,10 @@ RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     pandas \
     tensorboard
 
-ENV LC_ALL="C.UTF-8"
-ENV LANG="C.UTF-8"
-RUN apt-get install -y nvidia-common && \
-    DEBIAN_FRONTEND=noninteractive ubuntu-drivers autoinstall
+# ENV LC_ALL="C.UTF-8"
+# ENV LANG="C.UTF-8"
+# RUN apt-get install -y nvidia-common && \
+#     DEBIAN_FRONTEND=noninteractive ubuntu-drivers autoinstall
 
 # Install mesh dependencies
 
@@ -263,7 +263,7 @@ RUN strip --remove-section=.note.ABI-tag /opt/qt512/lib/libQt5Core.so.5
 
 # install other tools
 RUN apt-get update --fix-missing
-RUN apt-get install -y tree x11-utils xserver-xorg-video-dummy
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tree x11-utils xserver-xorg-video-dummy x11-xserver-utils
 RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     pynput pyautogui
 RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y python3-tk python3-dev
