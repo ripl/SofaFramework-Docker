@@ -30,34 +30,34 @@ RUN apt-get install -y \
 ###############################################################################
 ### BLENDER install -- used for manipulating robot meshes
 ###############################################################################
-RUN apt-get install -y \
-  cmake \
-  libx11-dev \
-  libxrender-dev \
-  libxxf86vm-dev \
-  libxcursor-dev \
-  libxi-dev \
-  libxrandr-dev \
-  libxinerama-dev \
-  libglew-dev \
-  libxft2 \
-  libxft2:i386 \
-  lib32ncurses5 \
-  libxext6 \
-  libxext6:i386
-RUN mkdir -p /builds/blender-git && cd /builds/blender-git && \
- git clone https://git.blender.org/blender.git && \
- mkdir /builds/blender-git/lib && \
-    cd /builds/blender-git/lib && \
-    svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64 && \
- update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
- cd /builds/blender-git/blender && git checkout v2.91.2 && \
- cd /builds/blender-git/blender && make update -j 8 && \
- cd /builds/blender-git/blender && make bpy -j 8 && \
- cp -r /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages /tmp && \
- rm -r /builds/blender-git && \
- mkdir -p /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages && \
- mv /tmp/site-packages /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7
+# RUN apt-get install -y \
+#   cmake \
+#   libx11-dev \
+#   libxrender-dev \
+#   libxxf86vm-dev \
+#   libxcursor-dev \
+#   libxi-dev \
+#   libxrandr-dev \
+#   libxinerama-dev \
+#   libglew-dev \
+#   libxft2 \
+#   libxft2:i386 \
+#   lib32ncurses5 \
+#   libxext6 \
+#   libxext6:i386
+# RUN mkdir -p /builds/blender-git && cd /builds/blender-git && \
+#  git clone https://git.blender.org/blender.git && \
+#  mkdir /builds/blender-git/lib && \
+#     cd /builds/blender-git/lib && \
+#     svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64 && \
+#  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
+#  cd /builds/blender-git/blender && git checkout v2.91.2 && \
+#  cd /builds/blender-git/blender && make update -j 8 && \
+#  cd /builds/blender-git/blender && make bpy -j 8 && \
+#  cp -r /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages /tmp && \
+#  rm -r /builds/blender-git && \
+#  mkdir -p /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages && \
+#  mv /tmp/site-packages /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7
 
 ###############################################################################
 ###############################################################################
@@ -266,7 +266,9 @@ RUN apt-get update --fix-missing
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tree x11-utils xserver-xorg-video-dummy x11-xserver-utils
 RUN PIP_TARGET=/usr/lib/python3.7/dist-packages python3.7 -m pip install \
     pynput pyautogui
-RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y python3-tk python3-dev
+RUN PIP_TARGET=/usr/lib/python2.7/dist-packages python2 -m pip install \
+    pynput pyautogui filelock
+RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y python3-tk python3-dev python-tk python-dev
 ENV DISPLAY :0
 COPY dummy.conf /dummy.conf
 
@@ -282,9 +284,9 @@ RUN chmod a+x /docker-entrypoint.sh
 ENV PATH="$PATH:/builds/sofa/bin"
 RUN rm /usr/bin/python3 && ln -s python3.7 /usr/bin/python3
 RUN rm /usr/bin/python && ln -s python3.7 /usr/bin/python
-RUN mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/bpy.so /usr/lib/python3.7/dist-packages && \
-    mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/2.91 /usr/lib/python3.7/dist-packages && \
-    rm -r /builds/blender-git
+# RUN mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/bpy.so /usr/lib/python3.7/dist-packages && \
+#     mv /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages/2.91 /usr/lib/python3.7/dist-packages && \
+#     rm -r /builds/blender-git
 
 ENV PYTHONPATH "/pkgs:/builds/python:$PYTHONPATH"
 
