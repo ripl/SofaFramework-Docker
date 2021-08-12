@@ -28,38 +28,6 @@ RUN apt-get install -y \
 
 
 ###############################################################################
-### BLENDER install -- used for manipulating robot meshes
-###############################################################################
-# RUN apt-get install -y \
-#   cmake \
-#   libx11-dev \
-#   libxrender-dev \
-#   libxxf86vm-dev \
-#   libxcursor-dev \
-#   libxi-dev \
-#   libxrandr-dev \
-#   libxinerama-dev \
-#   libglew-dev \
-#   libxft2 \
-#   libxft2:i386 \
-#   lib32ncurses5 \
-#   libxext6 \
-#   libxext6:i386
-# RUN mkdir -p /builds/blender-git && cd /builds/blender-git && \
-#  git clone https://git.blender.org/blender.git && \
-#  mkdir /builds/blender-git/lib && \
-#     cd /builds/blender-git/lib && \
-#     svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64 && \
-#  update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 && \
-#  cd /builds/blender-git/blender && git checkout v2.91.2 && \
-#  cd /builds/blender-git/blender && make update -j 8 && \
-#  cd /builds/blender-git/blender && make bpy -j 8 && \
-#  cp -r /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages /tmp && \
-#  rm -r /builds/blender-git && \
-#  mkdir -p /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7/site-packages && \
-#  mv /tmp/site-packages /builds/blender-git/lib/linux_centos7_x86_64/python/lib/python3.7
-
-###############################################################################
 ###############################################################################
 
 
@@ -178,34 +146,31 @@ RUN PIP_TARGET=/usr/lib/python2.7/dist-packages python2 -m pip install numpy
 
 RUN mkdir -p /builds/src && mkdir -p /builds/build/master && mkdir -p /builds/plugins
 COPY ./pluginsCMakeLists.txt /builds/plugins/CMakeLists.txt
-COPY ./makefileCMakeCache.txt /builds/build/master/CMakeCache.txt
+COPY ./CMakeCache.txt /builds/build/master/CMakeCache.txt
 
 # clone specific version of Sofa, STLIB, SoftRobots, and ModelOrderReduction
 RUN cd /builds/src && \
-    git clone https://github.com/sofa-framework/sofa.git . && \
-    git checkout 36e1030cdbffb1db458344be095b5d80f463b5c5 && \
+    git clone -b v21.06 https://github.com/sofa-framework/sofa.git . && \
+    # git clone https://github.com/sofa-framework/sofa.git . && \
+    # git checkout 36e1030cdbffb1db458344be095b5d80f463b5c5 && \
 
     cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/STLIB.git && \
-    cd STLIB && \
-    git checkout 6f329f61af7be3d2baab997e8318e95fde4fecca && \
+    # cd STLIB && \
+    # git checkout 6f329f61af7be3d2baab997e8318e95fde4fecca && \
 
-    cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/SoftRobots.git && \
-    cd SoftRobots && \
-    git checkout 93a7d0ed6658b0819cefbd4c91b90f5dae64be78 && \
+    # cd SoftRobots && \
+    # git checkout 93a7d0ed6658b0819cefbd4c91b90f5dae64be78 && \
 
-    cd /builds/plugins && \
     git clone https://github.com/SofaDefrost/ModelOrderReduction.git && \
-    cd ModelOrderReduction && \
-    git checkout 83931e5697770e441e15dc3666c32f71fc038983 && \
+    # cd ModelOrderReduction && \
+    # git checkout 83931e5697770e441e15dc3666c32f71fc038983 && \
 
     # Build
     cd /builds/build/master && \
     cmake -c CMakeCache.txt && \
     make -j 8 && \
-
-
     cd /builds/build/master && \
     make install && \
     mv /builds/build/master/install /builds/sofa && \
@@ -294,9 +259,9 @@ RUN apt-get install -y sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 RUN adduser --disabled-password --gecos '' sofauser && adduser sofauser sudo
 RUN chown -R sofauser:sofauser /builds
-USER sofauser
-WORKDIR /home/sofauser
-ENV HOME="/home/sofauser"
+# USER sofauser
+# WORKDIR /home/sofauser
+# ENV HOME="/home/sofauser"
 SHELL ["/bin/bash", "-c"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD /bin/bash -c "source ~/.bashrc && cd ~ && /bin/bash "
